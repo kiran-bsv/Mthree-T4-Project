@@ -1,0 +1,14 @@
+.qodo
+*/.qodo
+./*/.qodo
+
+node_modules
+*/node_modules
+./*/*/node_modules
+
+venv
+*/venv
+./*/*/venv
+
+*/.env
+.env
