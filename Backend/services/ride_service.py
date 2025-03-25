@@ -102,7 +102,10 @@ def start_ride(ride_id, otp, captain_id):
     ride = Ride.query.get(ride_id)
     if not ride:
         raise ValueError("Ride not found")
-
+    
+    if ride.status == "ongoing":
+        return {"message": "Ride is already ongoing", "status":"PickedBySomeone","rideId": ride.id}
+    
     if ride.status != "accepted":
         raise ValueError("Ride not accepted")
 

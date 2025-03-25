@@ -1,6 +1,19 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 
 const RidePopUp = (props) => {
+
+    const [isPopupVisible, setIsPopupVisible] = useState(true);
+
+    useEffect(() => {
+        if (isPopupVisible) {
+            const timer = setTimeout(() => {
+                setIsPopupVisible(false);
+            }, 7000); // 7 seconds delay
+
+            return () => clearTimeout(timer); // Cleanup the timer on component unmount
+        }
+    }, [isPopupVisible]);
+
     return (
         <div>
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
@@ -38,7 +51,7 @@ const RidePopUp = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className='mt-5 w-full '>
+                {(<div className='mt-5 w-full '>
                     <button onClick={() => {
                         props.setConfirmRidePopupPanel(true)
                         props.confirmRide()
@@ -51,7 +64,7 @@ const RidePopUp = (props) => {
                     }} className='mt-2 w-full bg-gray-300 text-gray-700 font-semibold p-2 px-10 rounded-lg'>Ignore</button>
 
 
-                </div>
+                </div>)}
             </div>
         </div>
     )

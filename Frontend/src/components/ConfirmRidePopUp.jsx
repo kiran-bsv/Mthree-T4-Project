@@ -20,6 +20,15 @@ const ConfirmRidePopUp = (props) => {
             }
         })
 
+        if (response.data.status == "ongoing" || response.data.status == "accpeted") {
+            props.setConfirmRidePopupPanel(false)
+            props.setRidePopupPanel(false)
+            alert("Ride has been accepted by someone else")
+            setTimeout(() => {
+                navigate('/captain-home');
+            }, 7000); 
+        }
+
         if (response.status === 200) {
             props.setConfirmRidePopupPanel(false)
             props.setRidePopupPanel(false)
