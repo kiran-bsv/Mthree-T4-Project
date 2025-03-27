@@ -2,6 +2,7 @@ import random
 from models.ride_model import Ride, db
 from services.map_service import get_distance_time
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.exc import SQLAlchemyError
 
 def get_fare(pickup, destination):
     """Calculate the fare based on distance and time."""
@@ -67,9 +68,14 @@ def create_ride(pickup, destination, vehicleType):
 
 def confirm_ride(ride_id, captain_id):
     from socket_handler import socketio
+    # socketio.emit("user-rider", {ride_id,captain_id}, to=None)
+
     from models.captain_model import Captain
     """Confirm a ride by assigning a captain."""
     ride = Ride.query.get(ride_id)
+    if ride.status != "pending":
+        return {"message": "Ride is already ongoing", "status":"PickedBySomeone","rideId": ride.id}
+    
     if not ride:
         raise ValueError("Ride not found")
 
@@ -82,7 +88,7 @@ def confirm_ride(ride_id, captain_id):
     ride_data = {
         "rideId": ride.id,
         "status": "ongoing",
-        "captain": {"firstname": captain.firstname, "lastname": captain.lastname,
+        "captain": {"id":captain.id, "firstname": captain.firstname, "lastname": captain.lastname,
                     "vehicle_plate": captain.vehicle_plate},
         "pickup": ride.pickup,
         "destination": ride.destination,
@@ -95,6 +101,52 @@ def confirm_ride(ride_id, captain_id):
     return ride_data
 
 
+'''
+def confirm_ride(ride_id, captain_id):
+    """Confirm a ride by assigning a captain with row-level locking."""
+    from socket_handler import socketio
+    # socketio.emit("user-rider", {ride_id,captain_id}, to=None)
+    from models.captain_model import Captain
+    try:
+        # Lock the ride row for update
+        ride = db.session.query(Ride).with_for_update().get(ride_id)
+        print(f'Trying 112 - {captain_id}')
+        
+        if ride.status != "pending":
+            return {"message": "Ride is already ongoing", "status": "PickedBySomeone", "rideId": ride.id}
+        
+        if not ride:
+            raise ValueError("Ride not found")
+        
+        # Update ride details
+        ride.status = "accepted"
+        ride.captain_id = captain_id
+        db.session.commit()
+        print(f"ride commit : 124 - {captain_id}")
+        
+        captain = Captain.query.get(captain_id)
+        
+        ride_data = {
+            "rideId": ride.id,
+            "status": "ongoing",
+            "captain": {"captain_id":captain.id,"firstname": captain.firstname, "lastname": captain.lastname,
+                        "vehicle_plate": captain.vehicle_plate},
+            "pickup": ride.pickup,
+            "destination": ride.destination,
+            "otp": ride.otp,
+            "fare": ride.fare
+        }
+        
+        # Emit event to notify clients
+        socketio.emit("ride-confirmed", ride_data, to=None)
+        return ride_data
+    
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return {"message": "An error occurred", "status": "Error", "error": str(e)}
+'''
+
+'''
 def start_ride(ride_id, otp, captain_id):
     from socket_handler import socketio
     from models.captain_model import Captain
@@ -103,9 +155,42 @@ def start_ride(ride_id, otp, captain_id):
     if not ride:
         raise ValueError("Ride not found")
     
-    if ride.status == "ongoing":
-        return {"message": "Ride is already ongoing", "status":"PickedBySomeone","rideId": ride.id}
+    # if ride.status == "ongoing" or ride.status == "accepted":
+    #     return {"message": "Ride is already ongoing", "status":"PickedBySomeone","rideId": ride.id}
     
+    if ride.status != "accepted":
+        raise ValueError("Ride not accepted")
+
+    if ride.otp != otp:
+        raise ValueError("Invalid OTP")
+
+    ride.status = "ongoing"
+    db.session.commit()
+
+    captain = Captain.query.get(captain_id)
+
+    ride_data = {
+        "rideId": ride.id,
+        "status": "ongoing",
+        "captain": {"firstname": captain.firstname, "lastname": captain.lastname},
+        "destination": ride.destination,
+        "fare": ride.fare
+    }
+    
+    # socketio.emit("ride-started", ride_data, broadcast=True)
+    socketio.emit("ride-started", ride_data, to=None)
+    return ride_data
+
+'''
+
+def start_ride(ride_id, otp, captain_id):
+    from socket_handler import socketio
+    from models.captain_model import Captain
+    """Start a ride if OTP matches."""
+    ride = Ride.query.get(ride_id)
+    if not ride:
+        raise ValueError("Ride not found")
+
     if ride.status != "accepted":
         raise ValueError("Ride not accepted")
 
@@ -132,6 +217,7 @@ def start_ride(ride_id, otp, captain_id):
 def end_ride(ride_id, captain_id):
     from socket_handler import socketio
     """Complete a ride."""
+    print(ride_id, captain_id)
     ride = Ride.query.filter_by(id=ride_id, captain_id=captain_id).first()
     if not ride:
         raise ValueError("Ride not found")

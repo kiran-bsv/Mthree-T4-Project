@@ -4,15 +4,13 @@ const RidePopUp = (props) => {
 
     const [isPopupVisible, setIsPopupVisible] = useState(true);
 
-    useEffect(() => {
-        if (isPopupVisible) {
-            const timer = setTimeout(() => {
-                setIsPopupVisible(false);
-            }, 7000); // 7 seconds delay
-
-            return () => clearTimeout(timer); // Cleanup the timer on component unmount
-        }
-    }, [isPopupVisible]);
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         props.setRidePopupPanel(false);
+    //     }, 2000);
+    //     console.log('close popup');
+    //     return () => clearTimeout(timer); // Cleanup the timer if the component unmounts or if the effect re-runs
+    // }, []);
 
     return (
         <div>
@@ -54,12 +52,13 @@ const RidePopUp = (props) => {
                 {(<div className='mt-5 w-full '>
                     <button onClick={() => {
                         props.setConfirmRidePopupPanel(true)
-                        props.confirmRide()
+                        props.confirmRide() // user end
 
                     }} className=' bg-green-600 w-full text-white font-semibold p-2 px-10 rounded-lg'>Accept</button>
 
                     <button onClick={() => {
                         props.setRidePopupPanel(false)
+                        props.setConfirmRidePopupPanel(false)
 
                     }} className='mt-2 w-full bg-gray-300 text-gray-700 font-semibold p-2 px-10 rounded-lg'>Ignore</button>
 

@@ -93,15 +93,42 @@ const CaptainHome = () => {
             console.log("Ride Data set:", data);
             setRide(data);
             setRidePopupPanel(true);
+            setConfirmRidePopupPanel(false);
+            // const timer = setTimeout(() => {
+            //     setRidePopupPanel((prev) => {
+            //         if (prev && !confirmRidePopupPanel) {
+            //             console.log('close popup from captain home -1');
+            //             return false;
+            //         }
+            //         return prev;
+            //     });
+            //     console.log('close popup from captain home -2');
+            // }, 6000);
+        
+            
+            // return () => clearTimeout(timer);
             console.log("Ride popup set to true");
         };
+
+        const handleRideConfirmed = (ride) => {
+            console.log("Ride confirmed:", ride);
+            if(ride.captain.id !== captain.id) {
+                setRidePopupPanel(false);
+                setConfirmRidePopupPanel(false);
+            }
+
+          };
     
-        socket.on('new-ride', handleNewRide);
-    
+        socket.on('new-ride', handleNewRide); //////////////////////////////////////////////////////////////////////////////////////////////
+        socket.on("ride-confirmed", handleRideConfirmed);
         return () => {
-            clearInterval(locationInterval);  // Cleanup interval
-            socket.off('new-ride', handleNewRide);  // Cleanup socket event
-        };
+            socket.off("ride-confirmed", handleRideConfirmed);
+            socket.off('new-ride', handleNewRide); // Cleanup interval on unmount
+          };
+        // return () => {
+        //     clearInterval(locationInterval);  // Cleanup interval
+        //     socket.off('new-ride', handleNewRide);  // Cleanup socket event
+        // };
     }, [captain]);
 
     async function confirmRide() {
@@ -114,19 +141,19 @@ const CaptainHome = () => {
 
         // }, {
         //     headers: {
-        //         Authorization: `Bearer ${localStorage.getItem('token')}`
+        //         Authorization: `Bearer ${localStorage.getItem('captainToken')}`
         //     }
         // })
 
-        // setRidePopupPanel(false)
-        // setConfirmRidePopupPanel(true)
+        setRidePopupPanel(false)
+        setConfirmRidePopupPanel(true)
         console.log("🚀 ride:", ride);  
-    console.log("🚀 captain:", captain);
+        console.log("🚀 captain:", captain);
 
-    if (!ride?.ride_id || !captain?.id) {
-        console.error("❌ Missing rideId or captainId");
-        return;
-    }
+        if (!ride?.ride_id || !captain?.id) {
+            console.error("❌ Missing rideId or captainId");
+            return;
+        }
         try {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
               rideId:  ride.ride_id,
@@ -136,7 +163,7 @@ const CaptainHome = () => {
                 Authorization: `Bearer ${localStorage.getItem('captainToken')}`
               }
             });
-            // console.log("ride.Id in Home.jsx 119:", ride.id)
+            console.log("ride.Id in captainHome.jsx 152:", ride.id)
             setRidePopupPanel(false);
             setConfirmRidePopupPanel(true);
           } catch (error) {
@@ -193,11 +220,12 @@ const CaptainHome = () => {
                     confirmRide={confirmRide}
                 />
             </div>
-            <div ref={confirmRidePopupPanelRef} className='fixed w-full h-screen z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12'>
+           { console.log('ride:', ride)}
+            {(<div ref={confirmRidePopupPanelRef} className='fixed w-full h-screen z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12'>
                 <ConfirmRidePopUp
                     ride={ride}
                     setConfirmRidePopupPanel={setConfirmRidePopupPanel} setRidePopupPanel={setRidePopupPanel} />
-            </div>
+            </div>)}
         </div>
     )
 }

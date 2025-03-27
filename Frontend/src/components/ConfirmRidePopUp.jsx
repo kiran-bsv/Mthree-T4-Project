@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
@@ -7,8 +7,25 @@ const ConfirmRidePopUp = (props) => {
     const [ otp, setOtp ] = useState('')
     const navigate = useNavigate()
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            props.setRidePopupPanel(false);
+        }, 2000);
+        console.log('close popup');
+        return () => clearTimeout(timer); // Cleanup the timer if the component unmounts or if the effect re-runs
+    }, []);
+
     const submitHander = async (e) => {
         e.preventDefault()
+
+        if (props.ride.status == "ongoing" || props.ride.status == "accepted") {
+            props.setConfirmRidePopupPanel(false)
+            props.setRidePopupPanel(false)
+            alert("Ride has been accepted by someone else")
+            setTimeout(() => {
+                navigate('/captain-home');
+            }, 7000); 
+        }
 
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
             params: {
@@ -19,8 +36,7 @@ const ConfirmRidePopUp = (props) => {
                 Authorization: `Bearer ${localStorage.getItem('captainToken')}`
             }
         })
-
-        if (response.data.status == "ongoing" || response.data.status == "accpeted") {
+        if (response.data.status == "ongoing" || response.data.status == "accepted") {
             props.setConfirmRidePopupPanel(false)
             props.setRidePopupPanel(false)
             alert("Ride has been accepted by someone else")
