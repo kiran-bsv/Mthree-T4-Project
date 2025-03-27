@@ -84,6 +84,7 @@ def end_ride_api():
             return jsonify({'captainId': ['Captain ID is required']}), 400
 
         ride = end_ride(data['rideId'], captain_id)
+        print("ride", ride)
         return jsonify({'message': 'Ride ended', 'ride_id': ride.id}), 200
 
     except ValidationError as err:

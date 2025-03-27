@@ -1,3 +1,5 @@
+// This script is at user end - confirm bar
+
 import React from 'react'
 
 const ConfirmRide = (props) => {
@@ -33,6 +35,7 @@ const ConfirmRide = (props) => {
                         </div>
                     </div>
                 </div>
+                {/* console.log("confirm ride:36") */}
                 <button onClick={() => {
                     props.setVehicleFound(true)
                     props.setConfirmRidePanel(false)

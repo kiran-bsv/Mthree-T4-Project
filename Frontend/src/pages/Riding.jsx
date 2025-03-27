@@ -26,7 +26,7 @@ const Riding = () => {
                 <i className="text-lg font-medium ri-home-5-line"></i>
             </Link>
             <div className='h-1/2'>
-                <LiveTracking />
+                {/* <LiveTracking /> */}
 
             </div>
             <div className='h-1/2 p-4'>

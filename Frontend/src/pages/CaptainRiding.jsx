@@ -10,7 +10,9 @@ const CaptainRiding = () => {
     const [ finishRidePanel, setFinishRidePanel ] = useState(false)
     const finishRidePanelRef = useRef(null)
     const location = useLocation()
+    console.log('ridedata', location.state?.ride);
     const rideData = location.state?.ride
+    console.log(rideData)
 
 
 
@@ -55,7 +57,7 @@ const CaptainRiding = () => {
             </div>
 
             <div className='h-screen fixed w-screen top-0 z-[-1]'>
-                <LiveTracking />
+                {/* <LiveTracking /> */}
             </div>
 
         </div>
