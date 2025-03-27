@@ -13,6 +13,7 @@ import { useContext } from "react";
 import { UserDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import LiveTracking from "../components/LiveTracking";
+import locations from "../locations";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -34,7 +35,7 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [vehicleType, setvehicleType] = useState(null);
   const [ride, setRide] = useState(null);
-
+  // const [locations, setLocations] = useState([]);
   const navigate = useNavigate();
 
   const { socket } = useContext(SocketContext);
@@ -72,36 +73,64 @@ const Home = () => {
   const handlePickupChange = async (e) => {
     setPickup(e.target.value);
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
-        {
-          params: { input: e.target.value },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-        }
+      // const response = await axios.get(
+      //   `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+      //   {
+      //     params: { input: e.target.value },
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+      //     },
+      //   }
+      // );
+      // setPickupSuggestions(response.data.suggestions);
+      const query = e.target.value.toLowerCase();
+      setPickup(query);
+
+      if (query.length === 0) {
+        // setSuggestions([]);
+        return;
+      }
+
+      const filteredSuggestions = locations.filter((location) =>
+        location.toLowerCase().startsWith(query)
       );
-      setPickupSuggestions(response.data.suggestions);
-    } catch {
-      // handle error
+      // .slice(0, 5); // Limit suggestions
+
+      setPickupSuggestions(filteredSuggestions);
+    } catch (error) {
+      console.error("Error fetching pickup suggestions:", error);
     }
   };
 
   const handleDestinationChange = async (e) => {
     setDestination(e.target.value);
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
-        {
-          params: { input: e.target.value },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-        }
+      // const response = await axios.get(
+      //   `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+      //   {
+      //     params: { input: e.target.value },
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+      //     },
+      //   }
+      // );
+      // setDestinationSuggestions(response.data.suggestions);
+      const query = e.target.value.toLowerCase();
+      setDestination(query);
+
+      if (query.length === 0) {
+        // setSuggestions([]);
+        return;
+      }
+
+      const filteredSuggestions = locations.filter((location) =>
+        location.toLowerCase().startsWith(query)
       );
-      setDestinationSuggestions(response.data.suggestions);
-    } catch {
-      // handle error
+      // .slice(0, 5); // Limit suggestions
+
+      setDestinationSuggestions(filteredSuggestions);
+    } catch (error) {
+      console.error("Error fetching pickup suggestions:", error);
     }
   };
 
@@ -195,8 +224,8 @@ const Home = () => {
   );
 
   async function findTrip() {
-    setVehiclePanel(true);
-    setPanelOpen(false);
+    setVehiclePanel(true);  // shows the pickup vehicle options
+    setPanelOpen(false);   // pickup & dest panel
 
     // const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
     //     params: { pickup, destination },
@@ -218,6 +247,7 @@ const Home = () => {
         }
       );
       setFare(response.data);
+      console.log("Fare fetched successfully:", response.data);
     } catch (error) {
       console.error("Error fetching fare:", error);
       alert("Error fetching fare. Please try again.");
@@ -267,6 +297,8 @@ const Home = () => {
         {/* <LiveTracking /> */}
       </div>
       <div className=" flex flex-col justify-end h-screen absolute top-0 w-full">
+
+
         <div className="h-[30%] p-6 bg-white relative">
           <h5
             ref={panelCloseRef}
@@ -278,12 +310,14 @@ const Home = () => {
             <i className="ri-arrow-down-wide-line"></i>
           </h5>
           <h4 className="text-2xl font-semibold">Find a trip</h4>
+
           <form
             className="relative py-3"
             onSubmit={(e) => {
               submitHandler(e);
             }}
           >
+            {/* location & dest. input boxex */}
             <div className="line absolute h-16 w-1 top-[50%] -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
             <input
               onClick={() => {
@@ -315,6 +349,10 @@ const Home = () => {
             Find Trip
           </button>
         </div>
+
+
+
+
         <div ref={panelRef} className="bg-white h-0">
           <LocationSearchPanel
             suggestions={
@@ -330,6 +368,8 @@ const Home = () => {
           />
         </div>
       </div>
+
+      {/* choose pickup vehicle options */}
       <div
         ref={vehiclePanelRef}
         className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
