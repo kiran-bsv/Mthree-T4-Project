@@ -54,13 +54,20 @@ def get_distance_time(origin, destination, avg_speed=30):
         return {"error": "Invalid start or end location"}
 
     distance, path = dijkstra(start, end)
-
-    # Convert distance to time (Assuming speed in km/h)
     duration_hours = distance / avg_speed
-    # duration = f"{int(duration_hours)} hours {int((duration_hours * 60) % 60)} minutes"
-    duration = f"{duration_hours:.2f}"
 
-    return {"distance": f"{distance:.2f}", "duration": f"{duration}", "path": path}
+    return {
+        "distance": round(distance, 2),
+        "duration": round(duration_hours, 2),
+        "path": path
+    }
+
+    # # Convert distance to time (Assuming speed in km/h)
+    # duration_hours = distance / avg_speed
+    # # duration = f"{int(duration_hours)} hours {int((duration_hours * 60) % 60)} minutes"
+    # duration = f"{duration_hours:.2f}"
+
+    # return {"distance": f"{distance:.2f}", "duration": f"{duration}", "path": path}
     # return {"distance": "100 km", "duration": "2 hours"}
 
 def get_auto_complete_suggestions(input_text):

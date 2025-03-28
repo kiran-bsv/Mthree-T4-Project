@@ -6,14 +6,24 @@ from sqlalchemy.exc import SQLAlchemyError
 
 def get_fare(pickup, destination):
     """Calculate the fare based on distance and time."""
-    distance, time, path = get_distance_time(pickup, destination)
-    print(f"line 19 - distance: f{distance}, duration: f{time}, path: f{path}")
+    # distance, time, path = get_distance_time(pickup, destination)
+    result = get_distance_time(pickup, destination)
+    distance = float(result["distance"])
+    time = float(result["duration"])
+
+    print(f"line 19 - distance: {distance}, duration: {time}, path: {result["path"]}")
     if not pickup or not destination:
         raise ValueError("Pickup and destination are required")
 
-    fare = {"auto": distance*30, "car": distance*50, "moto": distance*15}
-    duration= {"auto": time*20+0.1, "car": time*10+0.2, "moto": time*8}
-    return fare, duration
+    # fare = {"auto": distance*30, "car": distance*50, "moto": distance*15}
+    # duration= {"auto": time*20+0.1, "car": time*10+0.2, "moto": time*8}
+    distance = float(distance)
+    time = float(time)
+
+    fare = {"auto": round(distance * 30, 2), "car": round(distance * 50, 2), "moto": round(distance * 15, 2)}
+    duration = {"auto": round(time * 20 + 0.1, 2), "car": round(time * 10 + 0.2, 2), "moto": round(time * 8, 2)}
+
+    return fare, duration, distance
 
 def generate_otp(length=6):
     """Generate a numeric OTP of given length."""
@@ -33,7 +43,7 @@ def create_ride(pickup, destination, vehicleType):
     if not user:
         return {"error": "Invalid user ID"}, 400
 
-    fare, duration = get_fare(pickup, destination)
+    fare, duration, distance = get_fare(pickup, destination)
     if not fare or vehicleType not in fare:
         return {"error": "Invalid fare data"}, 500
     
@@ -44,6 +54,7 @@ def create_ride(pickup, destination, vehicleType):
         pickup=pickup,
         destination=destination,
         vehicleType=vehicleType,
+        distance=distance,
         otp=generate_otp(),
         fare=fare[vehicleType],
         duration=duration[vehicleType]

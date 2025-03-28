@@ -33,6 +33,8 @@ const Home = () => {
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [activeField, setActiveField] = useState(null);
   const [fare, setFare] = useState({});
+  const [duration, setDuration] = useState({});
+  const [distance, setDistance] = useState(null);
   const [vehicleType, setvehicleType] = useState(null);
   const [ride, setRide] = useState(null);
   // const [locations, setLocations] = useState([]);
@@ -246,8 +248,13 @@ const Home = () => {
           },
         }
       );
-      setFare(response.data);
       console.log("Fare fetched successfully:", response.data);
+      // setFare(response.data.fare?.[0]);
+      setFare(response.data.fare);
+      // console.log(response.data.fare.fare?.[1]);
+      // setDuration(response.data.fare?.[1]);
+      setDuration(response.data.duration);
+      setDistance(response.data.distance);
     } catch (error) {
       console.error("Error fetching fare:", error);
       alert("Error fetching fare. Please try again.");
@@ -390,6 +397,8 @@ const Home = () => {
           pickup={pickup}
           destination={destination}
           fare={fare}
+          duration={duration}
+          distance={distance}
           vehicleType={vehicleType}
           setConfirmRidePanel={setConfirmRidePanel}
           setVehicleFound={setVehicleFound}
@@ -404,6 +413,8 @@ const Home = () => {
           pickup={pickup}
           destination={destination}
           fare={fare}
+          duration={duration}
+          distance={distance}
           vehicleType={vehicleType}
           setVehicleFound={setVehicleFound}
         />
