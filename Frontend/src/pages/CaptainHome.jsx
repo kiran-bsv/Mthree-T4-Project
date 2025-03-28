@@ -121,7 +121,7 @@ const CaptainHome = () => {
                 localStorage.setItem('captainStatus', 'open');
                 return;
             }
-            localStorage.setItem('captainStatus', 'closed');
+            if(ride.captain.id == captain.id) localStorage.setItem('captainStatus', 'closed');
           };
     
         socket.on('new-ride', handleNewRide); //////////////////////////////////////////////////////////////////////////////////////////////

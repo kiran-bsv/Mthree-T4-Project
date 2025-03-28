@@ -34,5 +34,8 @@ echo "Creating the deployment - frontend"
 kubectl apply -f fe-deployment.yaml
 
 echo "Porforwarding the services fronend 5173:80 and backend 5000:5000"
+
+echo "Opening the Minikube dashboard"
+minikube dashboard
 # kubectl port-forward svc/frontend-service 5173:80 -n uber
 # kubectl port-forward svc/backend-service 5000:5000 -n uber

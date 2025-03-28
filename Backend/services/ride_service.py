@@ -10,8 +10,9 @@ def get_fare(pickup, destination):
     result = get_distance_time(pickup, destination)
     distance = float(result["distance"])
     time = float(result["duration"])
+    path = result["path"]
 
-    print(f"line 19 - distance: {distance}, duration: {time}, path: {result["path"]}")
+    print(f"line 19 - distance: {distance}, duration: {time}, path: {path}")
     if not pickup or not destination:
         raise ValueError("Pickup and destination are required")
 
