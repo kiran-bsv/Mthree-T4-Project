@@ -45,8 +45,9 @@ def create_ride_api():
 def get_fare_api():
     try:
         data = fare_query_schema.load(request.args)
-        fare = get_fare(data['pickup'], data['destination'])
-        return jsonify({'fare': fare}), 200
+        fare, duration, distance = get_fare(data['pickup'], data['destination'])
+        print(f"line 49 - fare: {fare} \n duration: {duration}")
+        return jsonify({'fare': fare, 'duration': duration, 'distance': distance}), 200
     except ValidationError as err:
         return jsonify(err.messages), 400
 

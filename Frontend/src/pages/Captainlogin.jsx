@@ -39,6 +39,7 @@ const Captainlogin = () => {
         setCaptain(data.captain);
         localStorage.setItem('captainToken', data.token);
         navigate('/captain-home');
+        localStorage.setItem('captainStatus', 'open');
       }
     } catch (error) {
       console.error('Login Error:', error);

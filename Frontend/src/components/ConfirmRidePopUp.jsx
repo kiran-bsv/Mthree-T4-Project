@@ -86,7 +86,7 @@ const ConfirmRidePopUp = (props) => {
                         <i className="ri-currency-line"></i>
                         <div>
                             <h3 className='text-lg font-medium'>₹{props.ride?.fare} </h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Cash Cash</p>
+                            <p className='text-sm -mt-1 text-gray-600'>Cash</p>
                         </div>
                     </div>
                 </div>
@@ -99,6 +99,7 @@ const ConfirmRidePopUp = (props) => {
                         <button onClick={() => {
                             props.setConfirmRidePopupPanel(false)
                             props.setRidePopupPanel(false)
+                            localStorage.setItem('captainStatus', 'open')
 
                         }} className='w-full mt-2 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg'>Cancel</button>
 

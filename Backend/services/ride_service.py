@@ -6,11 +6,24 @@ from sqlalchemy.exc import SQLAlchemyError
 
 def get_fare(pickup, destination):
     """Calculate the fare based on distance and time."""
+    # distance, time, path = get_distance_time(pickup, destination)
+    result = get_distance_time(pickup, destination)
+    distance = float(result["distance"])
+    time = float(result["duration"])
+
+    print(f"line 19 - distance: {distance}, duration: {time}, path: {result["path"]}")
     if not pickup or not destination:
         raise ValueError("Pickup and destination are required")
 
-    fare = {"auto": 100, "car": 200, "moto": 50}
-    return fare
+    # fare = {"auto": distance*30, "car": distance*50, "moto": distance*15}
+    # duration= {"auto": time*20+0.1, "car": time*10+0.2, "moto": time*8}
+    distance = float(distance)
+    time = float(time)
+
+    fare = {"auto": round(distance * 30, 2), "car": round(distance * 50, 2), "moto": round(distance * 15, 2)}
+    duration = {"auto": round(time * 3 + 0.1, 2), "car": round(time * 2 + 0.2, 2), "moto": round(time * 3, 2)}
+
+    return fare, duration, distance
 
 def generate_otp(length=6):
     """Generate a numeric OTP of given length."""
@@ -30,17 +43,22 @@ def create_ride(pickup, destination, vehicleType):
     if not user:
         return {"error": "Invalid user ID"}, 400
 
-    fare = get_fare(pickup, destination)
+    fare, duration, distance = get_fare(pickup, destination)
     if not fare or vehicleType not in fare:
         return {"error": "Invalid fare data"}, 500
+    print(f"line 49 - fare: {fare} \n faretype: {type(fare[vehicleType])}")
+    
+    print(f"line 38 \n fare: {fare} \n duration: {duration}")
 
     new_ride = Ride(
         user_id=user_id,
         pickup=pickup,
         destination=destination,
         vehicleType=vehicleType,
+        distance=distance,
         otp=generate_otp(),
-        fare=fare[vehicleType]
+        fare=fare[vehicleType],
+        duration=duration[vehicleType]
     )
 
     db.session.add(new_ride)
@@ -60,7 +78,10 @@ def create_ride(pickup, destination, vehicleType):
                 "lastname": user.lastname
             },
             "email": user.email
-        }
+        },
+        "duration": new_ride.duration,
+        "distance": new_ride.distance,
+        "status": new_ride.status
     }
     # socketio.emit("new-ride", ride_data, broadcast=True)
     socketio.emit("new-ride", ride_data, to=None)
@@ -78,22 +99,31 @@ def confirm_ride(ride_id, captain_id):
     
     if not ride:
         raise ValueError("Ride not found")
+    
+    captain = Captain.query.get(captain_id)
+    if not captain:
+        raise ValueError("Captain not found")
+    captain.status = "active"
 
     ride.status = "accepted"
     ride.captain_id = captain_id
     db.session.commit()
 
-    captain = Captain.query.get(captain_id)
+    # captain = Captain.query.get(captain_id)
 
     ride_data = {
+        "userId": ride.user_id,
         "rideId": ride.id,
         "status": "ongoing",
         "captain": {"id":captain.id, "firstname": captain.firstname, "lastname": captain.lastname,
-                    "vehicle_plate": captain.vehicle_plate},
+                    "vehicle_plate": captain.vehicle_plate, "status": captain.status},
         "pickup": ride.pickup,
         "destination": ride.destination,
         "otp": ride.otp,
-        "fare": ride.fare
+        "fare": ride.fare,
+        "duration": ride.duration,
+        "distance": ride.distance,
+        "vehicleType": ride.vehicleType
     }
     
     # socketio.emit("ride-confirmed", ride_data, broadcast=True)  # Emit event to all clients
@@ -207,7 +237,11 @@ def start_ride(ride_id, otp, captain_id):
         "status": "ongoing",
         "captain": {"firstname": captain.firstname, "lastname": captain.lastname},
         "destination": ride.destination,
-        "fare": ride.fare
+        "fare": ride.fare,
+        "duration": ride.duration,
+        "distance": ride.distance,
+        "vehicleType": ride.vehicleType,
+        "userId": ride.user_id,
     }
     
     # socketio.emit("ride-started", ride_data, broadcast=True)

@@ -10,4 +10,3 @@ if __name__ == '__main__':
     # socketio.init_app(app, async_mode="eventlet")
     # eventlet.wsgi.server(eventlet.listen(("0.0.0.0", 5000)), app)
     socketio.run(app, port=5000)
-    

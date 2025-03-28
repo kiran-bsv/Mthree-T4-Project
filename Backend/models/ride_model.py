@@ -10,8 +10,8 @@ class Ride(db.Model):
     fare = db.Column(db.Float, nullable=False)
 
     status = db.Column(db.Enum('pending', 'accepted', 'ongoing', 'completed', 'cancelled'), default='pending')
-    duration = db.Column(db.Integer)  # in seconds
-    distance = db.Column(db.Float)  # in meters
+    duration = db.Column(db.Float) 
+    distance = db.Column(db.Float)  
     paymentID = db.Column(db.String(255), nullable=True)
     orderId = db.Column(db.String(255), nullable=True)
     signature = db.Column(db.String(255), nullable=True)

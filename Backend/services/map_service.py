@@ -1,5 +1,7 @@
 import requests
 from models.captain_model import Captain
+from models.grid import m,adj_matrix
+from services.grid_service import get_node, dijkstra, get_place
 
 # GOOGLE_MAPS_API = os.getenv("GOOGLE_MAPS_API")  # ✅ Load Google Maps API key
 
@@ -26,7 +28,7 @@ def get_address_coordinates(address):
     #     print(f"Error fetching coordinates: {e}")
     #     raise
 
-def get_distance_time(origin, destination):
+def get_distance_time(origin, destination, avg_speed=60):
     """Fetch distance and travel time between two locations."""
     if not origin or not destination:
         raise ValueError("Origin and destination are required")
@@ -45,7 +47,28 @@ def get_distance_time(origin, destination):
     # except requests.exceptions.RequestException as e:
     #     print(f"Error fetching distance and time: {e}")
     #     raise
-    return {"distance": "100 km", "duration": "2 hours"}
+    start = get_node(origin)
+    end = get_node(destination)
+
+    if start not in adj_matrix or end not in adj_matrix:
+        return {"error": "Invalid start or end location"}
+
+    distance, path = dijkstra(start, end)
+    duration_hours = distance / avg_speed
+
+    return {
+        "distance": round(distance, 2),
+        "duration": round(duration_hours, 2),
+        "path": path
+    }
+
+    # # Convert distance to time (Assuming speed in km/h)
+    # duration_hours = distance / avg_speed
+    # # duration = f"{int(duration_hours)} hours {int((duration_hours * 60) % 60)} minutes"
+    # duration = f"{duration_hours:.2f}"
+
+    # return {"distance": f"{distance:.2f}", "duration": f"{duration}", "path": path}
+    # return {"distance": "100 km", "duration": "2 hours"}
 
 def get_auto_complete_suggestions(input_text):
     """Fetch location autocomplete suggestions using Google Places API."""
