@@ -99,6 +99,7 @@ const ConfirmRidePopUp = (props) => {
                         <button onClick={() => {
                             props.setConfirmRidePopupPanel(false)
                             props.setRidePopupPanel(false)
+                            localStorage.setItem('captainStatus', 'open')
 
                         }} className='w-full mt-2 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg'>Cancel</button>
 

@@ -63,7 +63,9 @@ const Home = () => {
     };
 
     const handleRideStarted = (ride) => {
-      if(ride.userId !== user.id) { return; }
+      console.log("Ride started: line 63", ride);
+      console.log("user 67:", user)
+      if(ride.userId != user.id) { return; }
       setWaitingForDriver(false);
       navigate("/riding", { state: { ride } });
     };

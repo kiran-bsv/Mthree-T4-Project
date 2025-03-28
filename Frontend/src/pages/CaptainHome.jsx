@@ -93,7 +93,7 @@ const CaptainHome = () => {
             console.log("Ride Data set:", data);
             // if(ride.status === "confirmed" || ride.status) {
             if(localStorage.getItem('captainStatus') !== 'open') return;
-            localStorage.setItem('captainStatus', user.id);
+            localStorage.setItem('captainStatus', data.user.id);
             setRide(data);
             setRidePopupPanel(true);
             setConfirmRidePopupPanel(false);
@@ -119,6 +119,7 @@ const CaptainHome = () => {
                 setRidePopupPanel(false);
                 setConfirmRidePopupPanel(false);
                 localStorage.setItem('captainStatus', 'open');
+                return;
             }
             localStorage.setItem('captainStatus', 'closed');
           };

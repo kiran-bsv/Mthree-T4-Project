@@ -240,7 +240,8 @@ def start_ride(ride_id, otp, captain_id):
         "fare": ride.fare,
         "duration": ride.duration,
         "distance": ride.distance,
-        "vehicleType": ride.vehicleType
+        "vehicleType": ride.vehicleType,
+        "userId": ride.user_id,
     }
     
     # socketio.emit("ride-started", ride_data, broadcast=True)
