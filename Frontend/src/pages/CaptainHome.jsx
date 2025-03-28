@@ -91,6 +91,9 @@ const CaptainHome = () => {
     
         const handleNewRide = (data) => {
             console.log("Ride Data set:", data);
+            // if(ride.status === "confirmed" || ride.status) {
+            if(localStorage.getItem('captainStatus') !== 'open') return;
+            localStorage.setItem('captainStatus', user.id);
             setRide(data);
             setRidePopupPanel(true);
             setConfirmRidePopupPanel(false);
@@ -112,11 +115,12 @@ const CaptainHome = () => {
 
         const handleRideConfirmed = (ride) => {
             console.log("Ride confirmed:", ride);
-            if(ride.captain.id !== captain.id) {
+            if(ride.captain.id !== captain.id && localStorage.getItem('captainStatus') == ride.userId ) {
                 setRidePopupPanel(false);
                 setConfirmRidePopupPanel(false);
+                localStorage.setItem('captainStatus', 'open');
             }
-
+            localStorage.setItem('captainStatus', 'closed');
           };
     
         socket.on('new-ride', handleNewRide); //////////////////////////////////////////////////////////////////////////////////////////////

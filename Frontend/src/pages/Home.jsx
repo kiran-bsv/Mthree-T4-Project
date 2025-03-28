@@ -42,6 +42,7 @@ const Home = () => {
 
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserDataContext);
+  // console.log("user:",user);
 
   useEffect(() => {
     if (!user || !user.id) {
@@ -53,12 +54,16 @@ const Home = () => {
 
   useEffect(() => {
     const handleRideConfirmed = (ride) => {
+      console.log("user : line 56", user);
+      console.log("Ride confirmed: line 57", ride);
+      if(ride.userId != user.id) { return; }
       setVehicleFound(false);
       setWaitingForDriver(true);
       setRide(ride);
     };
 
     const handleRideStarted = (ride) => {
+      if(ride.userId !== user.id) { return; }
       setWaitingForDriver(false);
       navigate("/riding", { state: { ride } });
     };

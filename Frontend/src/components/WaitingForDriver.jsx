@@ -1,6 +1,7 @@
 import React from 'react'
 
 const WaitingForDriver = (props) => {
+  // console.log("props: line 4", props)
   return (
     <div>
       <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
@@ -36,7 +37,17 @@ const WaitingForDriver = (props) => {
           <div className='flex items-center gap-5 p-3'>
             <i className="ri-time-line"></i>
             <div>
-                <h3 className='text-lg font-medium'>{props.ride?.distance}kms &nbsp;&nbsp;{props.ride?.duration}hrs</h3>
+                {/* <h3 className='text-lg font-medium'>{props.ride?.distance}kms &nbsp;&nbsp;{props.ride?.duration}hrs</h3> */}
+                <h3 className='text-lg font-medium'>
+                                {props.ride?.distance}kms&nbsp;&nbsp;
+                                {(() => {
+                                    const totalMinutes = Math.round((props.ride?.duration || 0) * 60);
+                                    const hours = Math.floor(totalMinutes / 60);
+                                    const minutes = totalMinutes % 60;
+                                    if (hours === 0) return `${minutes}min`;
+                                    return `${hours}hr ${minutes}min`;
+                                })()}
+                                </h3>
                 <p className='text-sm -mt-1 text-gray-600'>Distance, &nbsp;Duration</p>
             </div>
         </div>
@@ -44,7 +55,7 @@ const WaitingForDriver = (props) => {
             <i className="ri-currency-line"></i>
             <div>
               <h3 className='text-lg font-medium'>₹{props.ride?.fare} </h3>
-              <p className='text-sm -mt-1 text-gray-600'>Cash Cash</p>
+              <p className='text-sm -mt-1 text-gray-600'>Cash</p>
             </div>
           </div>
         </div>

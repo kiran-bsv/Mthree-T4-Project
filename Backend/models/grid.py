@@ -34,7 +34,7 @@ adj_matrix = {i: {} for i in range(m)}
 for i in range(m):
     for j in range(i + 1, m):
         if random.random() < 0.3:  # 30% probability of a direct connection
-            distance = random.randint(50, 500)  # Random distance in km
+            distance = random.randint(7, 15)  # Random distance in km
             adj_matrix[i][j] = distance
             adj_matrix[j][i] = distance  # Ensure symmetry
 

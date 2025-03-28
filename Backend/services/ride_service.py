@@ -21,7 +21,7 @@ def get_fare(pickup, destination):
     time = float(time)
 
     fare = {"auto": round(distance * 30, 2), "car": round(distance * 50, 2), "moto": round(distance * 15, 2)}
-    duration = {"auto": round(time * 20 + 0.1, 2), "car": round(time * 10 + 0.2, 2), "moto": round(time * 8, 2)}
+    duration = {"auto": round(time * 3 + 0.1, 2), "car": round(time * 2 + 0.2, 2), "moto": round(time * 3, 2)}
 
     return fare, duration, distance
 
@@ -46,6 +46,7 @@ def create_ride(pickup, destination, vehicleType):
     fare, duration, distance = get_fare(pickup, destination)
     if not fare or vehicleType not in fare:
         return {"error": "Invalid fare data"}, 500
+    print(f"line 49 - fare: {fare} \n faretype: {type(fare[vehicleType])}")
     
     print(f"line 38 \n fare: {fare} \n duration: {duration}")
 
@@ -77,7 +78,10 @@ def create_ride(pickup, destination, vehicleType):
                 "lastname": user.lastname
             },
             "email": user.email
-        }
+        },
+        "duration": new_ride.duration,
+        "distance": new_ride.distance,
+        "status": new_ride.status
     }
     # socketio.emit("new-ride", ride_data, broadcast=True)
     socketio.emit("new-ride", ride_data, to=None)
@@ -95,22 +99,31 @@ def confirm_ride(ride_id, captain_id):
     
     if not ride:
         raise ValueError("Ride not found")
+    
+    captain = Captain.query.get(captain_id)
+    if not captain:
+        raise ValueError("Captain not found")
+    captain.status = "active"
 
     ride.status = "accepted"
     ride.captain_id = captain_id
     db.session.commit()
 
-    captain = Captain.query.get(captain_id)
+    # captain = Captain.query.get(captain_id)
 
     ride_data = {
+        "userId": ride.user_id,
         "rideId": ride.id,
         "status": "ongoing",
         "captain": {"id":captain.id, "firstname": captain.firstname, "lastname": captain.lastname,
-                    "vehicle_plate": captain.vehicle_plate},
+                    "vehicle_plate": captain.vehicle_plate, "status": captain.status},
         "pickup": ride.pickup,
         "destination": ride.destination,
         "otp": ride.otp,
-        "fare": ride.fare
+        "fare": ride.fare,
+        "duration": ride.duration,
+        "distance": ride.distance,
+        "vehicleType": ride.vehicleType
     }
     
     # socketio.emit("ride-confirmed", ride_data, broadcast=True)  # Emit event to all clients
@@ -224,7 +237,10 @@ def start_ride(ride_id, otp, captain_id):
         "status": "ongoing",
         "captain": {"firstname": captain.firstname, "lastname": captain.lastname},
         "destination": ride.destination,
-        "fare": ride.fare
+        "fare": ride.fare,
+        "duration": ride.duration,
+        "distance": ride.distance,
+        "vehicleType": ride.vehicleType
     }
     
     # socketio.emit("ride-started", ride_data, broadcast=True)

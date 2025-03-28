@@ -28,7 +28,7 @@ def get_address_coordinates(address):
     #     print(f"Error fetching coordinates: {e}")
     #     raise
 
-def get_distance_time(origin, destination, avg_speed=30):
+def get_distance_time(origin, destination, avg_speed=60):
     """Fetch distance and travel time between two locations."""
     if not origin or not destination:
         raise ValueError("Origin and destination are required")

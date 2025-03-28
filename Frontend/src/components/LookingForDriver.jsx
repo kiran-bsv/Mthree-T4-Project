@@ -28,7 +28,17 @@ const LookingForDriver = (props) => {
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="ri-time-line"></i>
                         <div>
-                            <h3 className='text-lg font-medium'>{props.distance}kms&nbsp;&nbsp;{props.duration?.[ props.vehicleType ]}hrs</h3>
+                            {/* <h3 className='text-lg font-medium'>{props.distance}kms&nbsp;&nbsp;{props.duration?.[ props.vehicleType ]}hrs</h3> */}
+                            <h3 className='text-lg font-medium'>
+                                {props.distance}kms&nbsp;&nbsp;
+                                {(() => {
+                                    const totalMinutes = Math.round((props.duration?.[props.vehicleType] || 0) * 60);
+                                    const hours = Math.floor(totalMinutes / 60);
+                                    const minutes = totalMinutes % 60;
+                                    if (hours === 0) return `${minutes}min`;
+                                    return `${hours}hr ${minutes}min`;
+                                })()}
+                                </h3>
                             <p className='text-sm -mt-1 text-gray-600'>Duration,&nbsp; Distance </p>
                         </div>
                     </div>
@@ -37,7 +47,7 @@ const LookingForDriver = (props) => {
                         <div>
                             {/* <h3 className='text-lg font-medium'>{props.duration[props.vehicleType]}hrs</h3> */}
                             <h3 className='text-lg font-medium'>₹{props.fare[ props.vehicleType ]} </h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Cash Cash</p>
+                            <p className='text-sm -mt-1 text-gray-600'>Cash</p>
                         </div>
                     </div>
                 </div>
