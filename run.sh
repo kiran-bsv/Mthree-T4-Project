@@ -6,6 +6,7 @@ set -e
 
 echo "Running the Minikube"
 minikube start
+# minikube addons enable metrics-server
 
 echo "Creating namespace"
 kubectl create namespace uber
@@ -21,7 +22,7 @@ docker build -t frontend:latest .
 echo "Loading the images - frontend"
 minikube image load frontend:latest
 
-echo "Loading the images - frontend"
+echo "Loading the images - backend"
 minikube image load backend-api:latest
 
 cd ..
