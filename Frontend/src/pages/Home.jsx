@@ -233,6 +233,14 @@ const Home = () => {
   );
 
   async function findTrip() {
+    if (!locations.includes(pickup)) {
+      alert("Whoa there! Our magic carpet doesn't fly to that pickup spot. Try another one from the list!");
+      return;
+    }
+    if (!locations.includes(destination)) {
+      alert("Yikes! Our GPS can't find that destination. Maybe it's on Mars? Try a different one!");
+      return;
+    }
     setVehiclePanel(true);  // shows the pickup vehicle options
     setPanelOpen(false);   // pickup & dest panel
 
