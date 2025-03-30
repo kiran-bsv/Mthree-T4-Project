@@ -6,9 +6,11 @@ set -e
 
 # Step 1: Start Minikube
 # 🚀 Ensure namespace exists
-NAMESPACE="uber"
-echo "🚀 Ensuring namespace '$NAMESPACE' exists..."
-kubectl get ns $NAMESPACE >/dev/null 2>&1 || kubectl create ns $NAMESPACE
+# NAMESPACE="uber"
+# echo "🚀 Ensuring namespace '$NAMESPACE' exists..."
+# kubectl get ns $NAMESPACE >/dev/null 2>&1 || kubectl create ns $NAMESPACE
+
+minikube start
 
 # Step 2: Use Docker env for Minikube
 eval $(minikube -p minikube docker-env)
@@ -48,7 +50,7 @@ kubectl apply -f k8s/deployments --namespace=uber
 # echo "Creating the deployment - frontend"
 # kubectl apply -f fe-deployment.yaml
 
-Step 8: Wait for deployments to become ready
+# Step 8: Wait for deployments to become ready
 echo "⏳ Waiting for deployments to become ready..."
 kubectl rollout status deployment/flask-backend -n uber
 kubectl rollout status deployment/frontend -n uber
