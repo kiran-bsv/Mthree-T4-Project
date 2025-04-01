@@ -12,15 +12,27 @@ def make_payment():
     user_id = get_jwt_identity()
     ride_id = data.get('ride_id')
     amount = data.get('amount')
+    payment_mode = data.get('payment_mode')
 
     if not ride_id or not amount:
         return jsonify({"error": "Missing required payment details"}), 400
 
-    new_payment = Payment(user_id=user_id, ride_id=ride_id, amount=amount, status="completed")
+    new_payment = Payment(user_id=user_id, ride_id=ride_id, amount=amount, status="completed", payment_mode=payment_mode)
     db.session.add(new_payment)
     db.session.commit()
 
-    return jsonify({"message": "Payment successful", "payment": new_payment.to_dict()}), 201
+    # Manually create a dictionary for the response
+    payment_data = {
+        "id": new_payment.id,
+        "user_id": new_payment.user_id,
+        "ride_id": new_payment.ride_id,
+        "amount": new_payment.amount,
+        "status": new_payment.status,
+        "created_at": new_payment.created_at.isoformat(),
+        "payment_mode": new_payment.payment_mode
+    }
+
+    return jsonify({"message": "Payment successful", "payment": payment_data}), 201
 
 @payments_bp.route('/history', methods=['GET'])
 @jwt_required()

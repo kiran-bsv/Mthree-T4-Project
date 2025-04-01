@@ -56,7 +56,9 @@ const Home = () => {
     const handleRideConfirmed = (ride) => {
       console.log("user : line 56", user);
       console.log("Ride confirmed: line 57", ride);
-      if(ride.userId != user.id) { return; }
+      if (ride.userId != user.id) {
+        return;
+      }
       setVehicleFound(false);
       setWaitingForDriver(true);
       setRide(ride);
@@ -64,8 +66,10 @@ const Home = () => {
 
     const handleRideStarted = (ride) => {
       console.log("Ride started: line 63", ride);
-      console.log("user 67:", user)
-      if(ride.userId != user.id) { return; }
+      console.log("user 67:", user);
+      if (ride.userId != user.id) {
+        return;
+      }
       setWaitingForDriver(false);
       navigate("/riding", { state: { ride } });
     };
@@ -78,6 +82,11 @@ const Home = () => {
       socket.off("ride-started", handleRideStarted);
     };
   }, [socket]);
+
+  const handleClick = () => {
+    console.log("Ride history clicked");
+    // navigate("/ride-history");
+  };
 
   const handlePickupChange = async (e) => {
     setPickup(e.target.value);
@@ -234,15 +243,19 @@ const Home = () => {
 
   async function findTrip() {
     if (!locations.includes(pickup)) {
-      alert("Whoa there! Our magic carpet doesn't fly to that pickup spot. Try another one from the list!");
+      alert(
+        "Whoa there! Our magic carpet doesn't fly to that pickup spot. Try another one from the list!"
+      );
       return;
     }
     if (!locations.includes(destination)) {
-      alert("Yikes! Our GPS can't find that destination. Maybe it's on Mars? Try a different one!");
+      alert(
+        "Yikes! Our GPS can't find that destination. Maybe it's on Mars? Try a different one!"
+      );
       return;
     }
-    setVehiclePanel(true);  // shows the pickup vehicle options
-    setPanelOpen(false);   // pickup & dest panel
+    setVehiclePanel(true); // shows the pickup vehicle options
+    setPanelOpen(false); // pickup & dest panel
 
     // const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
     //     params: { pickup, destination },
@@ -308,20 +321,38 @@ const Home = () => {
   }
 
   return (
-    <div className="h-screen relative overflow-hidden">
-      <img
+    <div className="h-screen relative overflow-hidden ">
+      {/* <img
         className="w-16 absolute left-5 top-5"
         src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
         alt=""
-      />
+      /> */}
+      <nav className="bg-white text-black flex justify-between items-center p-4 z-50 relative ">
+        <img
+          className="w-16"
+          src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
+          alt="Uber Logo"
+        />
+        <div className="flex items-center gap-8">
+          <button
+            className="bg-black text-white px-4 py-2 mx-2 rounded-lg"
+            onClick={() => navigate("/ride-history")}
+          >
+            Ride History
+          </button>
+          <span className="text-lg">{user.fullname.firstname}</span>
+        </div>
+      </nav>
       <div className="h-screen w-screen">
         {/* image for temporary use  */}
         {/* <LiveTracking /> */}
       </div>
       <div className=" flex flex-col justify-end h-screen absolute top-0 w-full">
-
-
-        <div className="h-[30%] p-6 bg-white relative">
+        <div
+          className={`h-[30%] p-6 bg-white relative transition-all duration-300 ${
+            panelOpen ? "top-[65px]" : "top-0"
+          }`}
+        >
           <h5
             ref={panelCloseRef}
             onClick={() => {
@@ -371,9 +402,6 @@ const Home = () => {
             Find Trip
           </button>
         </div>
-
-
-
 
         <div ref={panelRef} className="bg-white h-0">
           <LocationSearchPanel

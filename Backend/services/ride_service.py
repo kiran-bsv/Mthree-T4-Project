@@ -1,5 +1,8 @@
 import random
 from models.ride_model import Ride, db
+from models.rideHistory_model import RideHistory
+from models.favouriteLocation_model import FavoriteLocation
+from models.location_model import Location
 from services.map_service import get_distance_time
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.exc import SQLAlchemyError
@@ -33,6 +36,7 @@ def generate_otp(length=6):
 def create_ride(pickup, destination, vehicleType):
     from socket_handler import socketio
     from models.user_model import User
+    from models.grid import places
 
     """Create a new ride request."""
     user_id = get_jwt_identity()  # Extract user_id from JWT token
@@ -64,6 +68,26 @@ def create_ride(pickup, destination, vehicleType):
 
     db.session.add(new_ride)
     db.session.commit()
+
+    # Check and add pickup location if not exists
+    pickup_location = Location.query.filter_by(location_name=pickup).first()
+    if not pickup_location:
+        lat, lon = places.get(pickup, [None, None])
+        if lat is None or lon is None:
+            return {"error": "Invalid pickup location"}, 400
+        pickup_location = Location(user_id=user_id, location_name=pickup, latitude=lat, longitude=lon)
+        db.session.add(pickup_location)
+        db.session.commit()
+
+    # Check and add destination location if not exists
+    destination_location = Location.query.filter_by(location_name=destination).first()
+    if not destination_location:
+        lat, lon = places.get(destination, [None, None])
+        if lat is None or lon is None:
+            return {"error": "Invalid destination location"}, 400
+        destination_location = Location(user_id=user_id, location_name=destination, latitude=lat, longitude=lon)
+        db.session.add(destination_location)
+        db.session.commit()
 
     ride_data = {
         "ride_id": new_ride.id,
@@ -261,6 +285,29 @@ def end_ride(ride_id, captain_id):
         raise ValueError("Ride not ongoing")
 
     ride.status = "completed"
+    db.session.commit()
+
+    ride_history_entry = RideHistory(
+        user_id=ride.user_id,
+        ride_id=ride.id,
+        pickup=ride.pickup,
+        destination=ride.destination,
+        status=ride.status
+    )
+    db.session.add(ride_history_entry)
+    db.session.commit()
+
+    favorite = FavoriteLocation.query.filter_by(
+        user_id=ride.user_id, pickup=ride.pickup, destination=ride.destination
+    ).first()
+
+    if favorite:
+        favorite.count += 1  # Increase count if the route is frequently used
+    else:
+        new_favorite = FavoriteLocation(user_id=ride.user_id, ride_id=ride.id, 
+                                        pickup=ride.pickup, destination=ride.destination)
+        db.session.add(new_favorite)
+
     db.session.commit()
 
     ride_data = {"rideId": ride.id, "status": ride.status}
