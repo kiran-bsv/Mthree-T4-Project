@@ -14,6 +14,7 @@ from routes.user_routes import user_bp
 from routes.ride_routes import ride_bp
 from routes.map_routes import map_bp
 from routes.captain_routes import captain_bp
+from routes.payment_routes import apps
 
 # Load environment variables
 load_dotenv()
@@ -39,6 +40,7 @@ app.register_blueprint(user_bp, url_prefix='/users')
 app.register_blueprint(ride_bp, url_prefix='/rides')      
 app.register_blueprint(map_bp, url_prefix='/maps')        
 app.register_blueprint(captain_bp, url_prefix='/captains')
+app.register_blueprint(apps, url_prefix='/payment')
 
 @app.route('/')
 def home():

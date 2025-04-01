@@ -4,13 +4,36 @@ import { useEffect, useContext } from 'react'
 import { SocketContext } from '../context/SocketContext'
 import { useNavigate } from 'react-router-dom'
 import LiveTracking from '../components/LiveTracking'
+import { loadStripe } from "@stripe/stripe-js";
+const stripePromise = loadStripe("pk_test_51R8jsFCAERKUWFVyq2lEPigw9VijIzkCaBA7h9PQr98cWd6DV0SHoF0ytjGn983mZFJpJtgEpu4bKpJ35uziv8jD00ImdYkhtx");
 
 const Riding = () => {
     const location = useLocation()
     const { ride } = location.state || {} // Retrieve ride data
     const { socket } = useContext(SocketContext)
     const navigate = useNavigate()
+    const stripePromise = loadStripe("pk_test_51R8jsFCAERKUWFVyq2lEPigw9VijIzkCaBA7h9PQr98cWd6DV0SHoF0ytjGn983mZFJpJtgEpu4bKpJ35uziv8jD00ImdYkhtx");
 
+    const handleClick = async () => {
+        try {
+            const stripe = await stripePromise; // Ensure Stripe is properly loaded
+            const response = await fetch("http://127.0.0.1:5000/payment/create-checkout-session", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const session = await response.json();
+            if (session.id) {
+                await stripe.redirectToCheckout({ sessionId: session.id });
+            } else {
+                console.error("Failed to create session:", session);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
     useEffect(() => {
         if (!socket) return;
         socket.on("ride-ended", (data) => {
@@ -59,7 +82,7 @@ const Riding = () => {
                         </div>
                     </div>
                 </div>
-                <button className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg'>Make a Payment</button>
+                <button onClick={handleClick} className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg'>Make a Payment</button>
             </div>
         </div>
     )
