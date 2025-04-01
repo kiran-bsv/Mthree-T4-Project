@@ -14,7 +14,7 @@ const Riding = () => {
     useEffect(() => {
         if (!socket) return;
         socket.on("ride-ended", (data) => {
-            navigate('/home');
+            navigate('/payments', { state: { ride } }) // Navigate to payments page with ride data;
         });
     
         return () => socket.off("ride-ended"); 
