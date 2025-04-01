@@ -1,42 +1,54 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { loadStripe } from "@stripe/stripe-js";
+
+// Initialize Stripe
+const stripePromise = loadStripe("pk_test_51R8jsFCAERKUWFVyq2lEPigw9VijIzkCaBA7h9PQr98cWd6DV0SHoF0ytjGn983mZFJpJtgEpu4bKpJ35uziv8jD00ImdYkhtx");
 
 const Payments = () => {
   const location = useLocation();
-  const { ride } = location.state || {};
-  const navigate = useNavigate();
+  const { ride } = location.state || {}; // Retrieve ride data
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [paymentStatus, setPaymentStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handlePayment = async () => {
+    if (paymentMethod !== "card") {
+      setPaymentStatus("Only card payments are supported via Stripe.");
+      return;
+    }
+
     setLoading(true);
     setPaymentStatus("Processing...");
 
     try {
-      await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/payments/pay`,
-        { ride_id: ride.rideId, amount: ride.fare, method: paymentMethod },
+      // Use the correct backend URL
+      const response = await axios.post(
+        "http://127.0.0.1:5000/payment/create-checkout-session",
+        { ride_id: ride?.rideId || "test", amount: ride?.fare || 100 },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            "Content-Type": "application/json",
           },
         }
       );
+      console.log("Response from server:", response); 
+      const session = response.data;
 
-      setTimeout(() => {
-        setLoading(false);
-        setPaymentStatus("Payment Successful!");
-        setTimeout(() => navigate("/ratings", { state: { ride } }), 1500);
-      }, 1000);
+      if (session.id) {
+        const stripe = await stripePromise;
+        await stripe.redirectToCheckout({ sessionId: session.id });
+      } else {
+        throw new Error("Payment session creation failed.");
+      }
     } catch (error) {
-      setPaymentStatus("Payment Failed. Try Again.");
-    }
-
-    // setLoading(false);
-  };
-
+      console.error("Payment Error:", error);
+      setPaymentStatus(`Error: ${error.response?.data?.error || "Unknown error"}`);
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="h-screen flex flex-col justify-center items-center bg-gray-100 p-5">
       <h2 className="text-2xl font-bold mb-2">Confirm Payment</h2>
@@ -69,9 +81,7 @@ const Payments = () => {
         {loading ? "Processing..." : "Pay Now"}
       </button>
 
-      {paymentStatus && (
-        <p className="mt-3 text-green-600 font-medium">{paymentStatus}</p>
-      )}
+      {paymentStatus && <p className="mt-3 text-green-600 font-medium">{paymentStatus}</p>}
     </div>
   );
 };

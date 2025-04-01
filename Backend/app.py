@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
@@ -8,6 +8,8 @@ from flask_migrate import Migrate
 from flask_socketio import SocketIO  
 from database_handler.database_handler import connect_to_db, db
 # import eventlet
+import stripe
+
 
 # Import Routes
 from routes.user_routes import user_bp
@@ -21,7 +23,8 @@ from routes.payment_routes import payments_bp
 load_dotenv()
 
 app = Flask(__name__)
-
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=7)
 
@@ -47,3 +50,27 @@ app.register_blueprint(payments_bp, url_prefix='/payments')
 @app.route('/')
 def home():
     return jsonify({'message': 'Hello, Flask!'})
+
+@app.after_request
+def after_request(response):
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    return response
+
+@app.route('/payment/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    try:
+        data = request.get_json()
+        amount = data.get('amount')
+
+        if not amount:
+            return jsonify({"error": "Missing amount"}), 400
+
+        print(f"Received amount: {amount}")  # Debugging line
+
+        amount_cents = int(float(amount) * 100)
+
+        # Your Stripe session creation logic...
+    except Exception as e:
+        print(f"Error during session creation: {str(e)}")  # Debugging line
+        return jsonify({"error": str(e)}), 500

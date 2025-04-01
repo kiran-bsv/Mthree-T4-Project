@@ -1,31 +1,54 @@
 from flask import Blueprint, request, jsonify
-from app import db
-from models.payment_model import Payment
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_cors import cross_origin
+import stripe
+import os
+from dotenv import load_dotenv
+load_dotenv()
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+
 
 payments_bp = Blueprint('payments', __name__)
 
-@payments_bp.route('/pay', methods=['POST'])
-@jwt_required()
-def make_payment():
-    data = request.get_json()
-    user_id = get_jwt_identity()
-    ride_id = data.get('ride_id')
-    amount = data.get('amount')
+# Handle preflight requests explicitly
+@payments_bp.route('/create-checkout-session', methods=['OPTIONS'])
+@cross_origin(origins="http://localhost:5173")
+def handle_preflight():
+    response = jsonify({'message': 'Preflight request success'})
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
+    response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    return response, 200
 
-    if not ride_id or not amount:
-        return jsonify({"error": "Missing required payment details"}), 400
+@payments_bp.route('/create-checkout-session', methods=['POST'])
+@cross_origin(origins="http://localhost:5173")
+def create_checkout_session():
+    try:
+        data = request.get_json()
+        # print(f"Received data: {data}")
+        amount = data.get('amount')
 
-    new_payment = Payment(user_id=user_id, ride_id=ride_id, amount=amount, status="completed")
-    db.session.add(new_payment)
-    db.session.commit()
+        if not amount:
+            return jsonify({"error": "Missing amount"}), 400
 
-    return jsonify({"message": "Payment successful", "payment": new_payment.to_dict()}), 201
+        amount_cents = int(float(amount) * 100)
 
-@payments_bp.route('/history', methods=['GET'])
-@jwt_required()
-def get_payments():
-    user_id = get_jwt_identity()
-    payments = Payment.query.filter_by(user_id=user_id).all()
-    
-    return jsonify({"payments": [p.to_dict() for p in payments]}), 200
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'inr',
+                    'product_data': {'name': 'Ride Payment'},
+                    'unit_amount': amount_cents,
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url="http://localhost:5173/payment/success",
+            cancel_url="http://localhost:5173/payment/cancel",
+        )
+
+        return jsonify({"id": session.id}), 200
+
+    except Exception as e:
+         print(f"Error: {e}")
+    return jsonify({"error": str(e)}), 500
