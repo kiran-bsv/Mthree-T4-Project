@@ -40,6 +40,7 @@ app.register_blueprint(ride_bp, url_prefix='/rides')
 app.register_blueprint(map_bp, url_prefix='/maps')        
 app.register_blueprint(captain_bp, url_prefix='/captains')
 
+
 @app.route('/')
 def home():
     return jsonify({'message': 'Hello, Flask!'})

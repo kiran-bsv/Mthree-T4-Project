@@ -21,7 +21,8 @@ places = {
     "Charlotte": [35, -80],
     "Seattle": [47, -122],
     "Denver": [39, -104],
-    "Washington": [38, -77]
+    "Washington": [38, -77],
+    "Warangal" : [17, 17],
 }
 
 # Number of places (Grid size)

@@ -18,7 +18,8 @@ const locations = [
     "Charlotte",
     "Seattle",
     "Denver",
-    "Washington"
+    "Washington",
+    "Warangal"
 ];
 
 export default locations;
