@@ -236,7 +236,7 @@ def start_ride(ride_id, otp, captain_id):
     ride_data = {
         "rideId": ride.id,
         "status": "ongoing",
-        "captain": {"firstname": captain.firstname, "lastname": captain.lastname},
+        "captain": {"id":captain.id, "firstname": captain.firstname, "lastname": captain.lastname},
         "destination": ride.destination,
         "fare": ride.fare,
         "duration": ride.duration,

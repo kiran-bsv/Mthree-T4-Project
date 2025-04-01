@@ -14,7 +14,7 @@ const Riding = () => {
     useEffect(() => {
         if (!socket) return;
         socket.on("ride-ended", (data) => {
-            navigate('/home');
+            navigate('/payments', { state: { ride } }) // Navigate to payments page with ride data;
         });
     
         return () => socket.off("ride-ended"); 
@@ -59,7 +59,7 @@ const Riding = () => {
                         </div>
                     </div>
                 </div>
-                <button className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg'>Make a Payment</button>
+                <button className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg ' onClick={() => navigate('/payments', { state: { ride } })}>Make a Payment</button>
             </div>
         </div>
     )
