@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import CORS
-# from app import db
-# from models.payment_model import Payment
+from app import db
+from models.payment_model import Payment
 # from models.user_model import User
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import stripe
@@ -61,38 +61,31 @@ def create_checkout_session():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
-# @payments_bp.route("/payment/save", methods=["POST"])
-# @jwt_required()  # Ensure only authenticated users can make payments
-# def save_payment():
-#     try:
-#         data = request.json
-#         user_id = get_jwt_identity()  # Get the user ID from the JWT token
-#         ride_id = data.get("ride_id")
-#         amount = data.get("amount")
-#         payment_mode = data.get("payment_mode")
-        
-#         if not ride_id or not amount or not payment_mode:
-#             return jsonify({"error": "Missing required fields"}), 400
-        
-#         # Check if a payment record for the ride already exists (to prevent duplicates)
-#         existing_payment = Payment.query.filter_by(ride_id=ride_id).first()
-#         if existing_payment:
-#             return jsonify({"error": "Payment for this ride already exists"}), 400
+@payments_bp.route('/pay', methods=['POST'])
+@jwt_required()
+def make_payment():
+    data = request.get_json()
+    user_id = get_jwt_identity()
+    ride_id = data.get('ride_id')
+    amount = data.get('amount')
+    payment_mode = data.get('payment_mode')
 
-#         # Save payment record
-#         new_payment = Payment(
-#             user_id=user_id,
-#             ride_id=ride_id,
-#             amount=amount,
-#             payment_mode=payment_mode,
-#             status="completed"  # Set status to completed for successful transactions
-#         )
+    if not ride_id or not amount:
+        return jsonify({"error": "Missing required payment details"}), 400
 
-#         db.session.add(new_payment)
-#         db.session.commit()
+    new_payment = Payment(user_id=user_id, ride_id=ride_id, amount=amount, status="completed", payment_mode=payment_mode)
+    db.session.add(new_payment)
+    db.session.commit()
 
-#         return jsonify({"message": "Payment recorded successfully", "payment_id": new_payment.id}), 201
-    
-#     except Exception as e:
-#         db.session.rollback()
-#         return jsonify({"error": str(e)}), 500
+    # Manually create a dictionary for the response
+    payment_data = {
+        "id": new_payment.id,
+        "user_id": new_payment.user_id,
+        "ride_id": new_payment.ride_id,
+        "amount": new_payment.amount,
+        "status": new_payment.status,
+        "created_at": new_payment.created_at.isoformat(),
+        "payment_mode": new_payment.payment_mode
+    }
+
+    return jsonify({"message": "Payment successful", "payment": payment_data}), 201
