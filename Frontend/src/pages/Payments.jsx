@@ -17,10 +17,11 @@ const Payments = () => {
     try {
       await axios.post(
         `${import.meta.env.VITE_BASE_URL}/payments/pay`,
-        { ride_id: ride.rideId, amount: ride.fare, method: paymentMethod },
+        { ride_id: ride.rideId, amount: ride.fare, payment_mode: paymentMethod },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            "Content-Type": "application/json",
           },
         }
       );
