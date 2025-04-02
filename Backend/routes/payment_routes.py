@@ -1,42 +1,48 @@
 from flask import Blueprint, request, jsonify
-from flask_cors import cross_origin
+from flask_cors import CORS
+from flask_jwt_extended import jwt_required, get_jwt_identity
 import stripe
 import os
 from dotenv import load_dotenv
+
+# Load environment variables
 load_dotenv()
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
-
+# Create a Blueprint for payments
 payments_bp = Blueprint('payments', __name__)
 
-# Handle preflight requests explicitly
-@payments_bp.route('/create-checkout-session', methods=['OPTIONS'])
-@cross_origin(origins="http://localhost:5173")
-def handle_preflight():
-    response = jsonify({'message': 'Preflight request success'})
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
-    response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    return response, 200
+# ✅ Apply CORS to the Blueprint level (to avoid duplicate headers)
+CORS(payments_bp, resources={r"/create-checkout-session": {"origins": "http://localhost:5173"}})
 
+# ✅ Handle CORS preflight properly
+@payments_bp.route('/create-checkout-session', methods=['OPTIONS'])
+def handle_preflight():
+    return '', 204  # ✅ Return a proper preflight response
+
+# ✅ Payment route with JWT authentication
 @payments_bp.route('/create-checkout-session', methods=['POST'])
-@cross_origin(origins="http://localhost:5173")
+@jwt_required()  # 🔐 Require authentication
 def create_checkout_session():
     try:
+        # Get logged-in user identity from JWT
+        user_id = get_jwt_identity()
         data = request.get_json()
-        # print(f"Received data: {data}")
         amount = data.get('amount')
 
+        # Validate amount
         if not amount:
             return jsonify({"error": "Missing amount"}), 400
+        
+        amount_cents = int(float(amount) * 100)  # Convert to cents
 
-        amount_cents = int(float(amount) * 100)
-
+        # Create a Stripe Checkout Session
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
+            customer_email=f"user{user_id}@example.com",
             line_items=[{
                 'price_data': {
-                    'currency': 'inr',
+                    'currency': 'usd',
                     'product_data': {'name': 'Ride Payment'},
                     'unit_amount': amount_cents,
                 },
@@ -47,8 +53,8 @@ def create_checkout_session():
             cancel_url="http://localhost:5173/payment/cancel",
         )
 
-        return jsonify({"id": session.id}), 200
+        return jsonify({"id": session.id}), 200  # Return the Stripe session ID
 
     except Exception as e:
-         print(f"Error: {e}")
-    return jsonify({"error": str(e)}), 500
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500

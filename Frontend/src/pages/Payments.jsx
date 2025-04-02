@@ -23,17 +23,43 @@ const Payments = () => {
     setPaymentStatus("Processing...");
 
     try {
-      // Use the correct backend URL
+      // ✅ Retrieve JWT token from local storage
+      // const token = localStorage.getItem("token");
+      // const token = localStorage.getItem("captainToken") || localStorage.getItem("userToken");
+      // const token = localStorage.getItem("captainToken") || localStorage.getItem("userToken") || localStorage.getItem("token");
+      const token =
+  localStorage.getItem("captainToken") ||
+  localStorage.getItem("userToken") ||
+  localStorage.getItem("token");
+
+console.log("Retrieved JWT Token:", token);
+
+if (!token) {
+  setPaymentStatus("Authentication failed. Please log in.");
+  alert("No JWT token found. Please log in again.");
+  return;
+}
+
+      console.log("JWT Token: ", token); 
+      if (!token) {
+        setPaymentStatus("Authentication failed. Please log in.");
+        throw new Error("No JWT token found");
+      }
+
+      // ✅ Send authenticated request to backend
       const response = await axios.post(
         "http://127.0.0.1:5000/payment/create-checkout-session",
         { ride_id: ride?.rideId || "test", amount: ride?.fare || 100 },
         {
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,  // 🔐 Include JWT token
           },
+          withCredentials: true,
         }
       );
-      console.log("Response from server:", response); 
+
+      console.log("Response from server:", response);
       const session = response.data;
 
       if (session.id) {
@@ -44,11 +70,12 @@ const Payments = () => {
       }
     } catch (error) {
       console.error("Payment Error:", error);
-      setPaymentStatus(`Error: ${error.response?.data?.error || "Unknown error"}`);
-  } finally {
-    setLoading(false);
-  }
-};
+      setPaymentStatus(`Error: ${error.response?.data?.error || error.message || "Unknown error"}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col justify-center items-center bg-gray-100 p-5">
       <h2 className="text-2xl font-bold mb-2">Confirm Payment</h2>
@@ -81,7 +108,7 @@ const Payments = () => {
         {loading ? "Processing..." : "Pay Now"}
       </button>
 
-      {paymentStatus && <p className="mt-3 text-green-600 font-medium">{paymentStatus}</p>}
+      {paymentStatus && <p className="mt-3 text-red-600 font-medium">{paymentStatus}</p>}
     </div>
   );
 };
