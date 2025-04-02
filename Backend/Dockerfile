@@ -15,6 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
+ENV PROMETHEUS_MULTIPROC_DIR=/tmp
+RUN mkdir -p /tmp-w
+
 # Expose the port the app runs on
 EXPOSE 5000
 

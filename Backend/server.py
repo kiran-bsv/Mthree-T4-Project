@@ -8,11 +8,13 @@ from flask import request
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 import time
+from flask_cors import CORS
 # import eventlet
 # import eventlet.wsgi
 
 # Set up Prometheus metrics
 metrics = PrometheusMetrics(app)
+
 
 @app.route("/metrics")
 def metrics_endpoint():
@@ -32,16 +34,15 @@ log_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s in %(modul
 # Attach handler to Flask app logger
 app.logger.setLevel(logging.DEBUG)  # Ensure Flask captures DEBUG logs
 app.logger.addHandler(log_handler)
+
+# # ✅ Remove default console handlers
+# for handler in app.logger.handlers[:]:  
+#     if isinstance(handler, logging.StreamHandler):  
+#         app.logger.removeHandler(handler)
+
 # Prevent duplicate logs in console
 app.logger.propagate = False
 
-# # Log to console as well
-# console_handler = logging.StreamHandler()
-# console_handler.setLevel(logging.DEBUG)
-# console_handler.setFormatter(log_handler.formatter)
-# app.logger.addHandler(console_handler)
-
-# Log all incoming requests
 
 SENSITIVE_KEYS = {"password", "pwd", "pass", "token", "secret", "api_key"}  # Add more if needed
 
@@ -53,6 +54,7 @@ def mask_sensitive_data(data):
 
 @app.before_request
 def log_request():
+    
     start_time = time.time()
     sanitized_payload = None
 
@@ -60,7 +62,7 @@ def log_request():
         payload = request.get_json()
         if payload:
             sanitized_payload = mask_sensitive_data(payload)
-
+    # if request.method != 'OPTIONS':
     app.logger.info(f"➡️ Request: {request.method} {request.url} | "
                     f"IP: {request.remote_addr} | "
                     f"User-Agent: {request.user_agent} | "
@@ -70,14 +72,17 @@ def log_request():
 
 @app.after_request
 def log_response(response):
+    """Log responses with method, URL, and status."""
     duration = time.time() - request.start_time
-    app.logger.info(f"⬅️ Response: {response.status_code} | Time: {duration:.2f}s")
+    # if request.method != 'OPTIONS':
+    app.logger.info(f"⬅️ Response [{request.method} {request.url}]: {response.status_code} | Time: {duration:.2f}s")
     return response
 
 # Log unhandled exceptions automatically
 @app.errorhandler(Exception)
 def handle_exception(e):
-    app.logger.error(f"Unhandled Exception: {str(e)}", exc_info=True)
+    """Handle unhandled exceptions with concise logging."""
+    app.logger.error(f"❌ Error [{request.method} {request.url}]: {str(e)}")
     return {"error": "Something went wrong"}, 500
 
 # Log all SQL queries (Optional, for debugging)
@@ -109,5 +114,5 @@ if __name__ == 'server':
     # socketio.init_app(app, async_mode="eventlet")
     # eventlet.wsgi.server(eventlet.listen(("0.0.0.0", 5000)), app)
     app.logger.info("Starting Flask SocketIO App")
-    socketio.run(app, port=5000)
+    # socketio.run(app, port=5000)
     

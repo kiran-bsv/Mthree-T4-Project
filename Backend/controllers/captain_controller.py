@@ -1,5 +1,6 @@
 from flask import request, jsonify
 from models.captain_model import Captain, db
+from models.vehicle_model import Vehicle
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
@@ -22,6 +23,19 @@ def register_captain():
         vehicleType=data['vehicle']['vehicleType']
     )
     db.session.add(new_captain)
+    db.session.commit()
+
+    # Create vehicle entry
+    new_vehicle = Vehicle(
+        captain_id=new_captain.id,
+        vehicle_color=data["vehicle"]["color"],
+        vehicle_plate=data["vehicle"]["plate"],
+        vehicle_capacity=data["vehicle"]["capacity"],
+        vehicle_type=data["vehicle"]["vehicleType"]
+    )
+
+
+    db.session.add(new_vehicle)
     db.session.commit()
 
     token = create_access_token(identity=str(new_captain.id))
