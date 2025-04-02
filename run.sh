@@ -5,7 +5,7 @@ minikube delete --all
 minikube start
 
 # Step 2: Configure Docker to use Minikube’s environment
-eval $(minikube -p minikube docker-env)
+# eval $(minikube -p minikube docker-env)
 
 # Step 3: Reset 'uber' namespace
 echo "🔁 Resetting 'uber' namespace..."
@@ -16,6 +16,7 @@ kubectl create namespace uber
 build_and_load() {
     local name=$1
     local path=$2
+    # ls
     echo "🐳 Building $name Docker image..."
     cd "$path"
     docker build -t "$name:latest" .
