@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
 
@@ -12,12 +12,12 @@ const Payments = () => {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [paymentStatus, setPaymentStatus] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const handlePayment = async () => {
-    if (paymentMethod !== "card") {
-      setPaymentStatus("Only card payments are supported via Stripe.");
-      return;
-    }
+    if (paymentMethod === "card") {
+      // setPaymentStatus("Only card payments are supported via Stripe.");
+      // return;
+    // }
 
     setLoading(true);
     setPaymentStatus("Processing...");
@@ -61,6 +61,14 @@ if (!token) {
 
       console.log("Response from server:", response);
       const session = response.data;
+      setTimeout(() => {
+        setPaymentStatus("Payemnt Recieved");
+        console.log("Payment recived");
+        navigate("/success");
+        setTimeout(() => {
+          navigate("/ratings");
+        }, 2000);
+      }, 5000);
 
       if (session.id) {
         const stripe = await stripePromise;
@@ -74,7 +82,30 @@ if (!token) {
     } finally {
       setLoading(false);
     }
-  };
+  } else if (paymentMethod === "cash"){
+    setPaymentStatus("Processing...")
+    setTimeout(() => {
+      setPaymentStatus("Payemnt Recieved");
+      console.log("Payment recived");
+      navigate("/success");
+      setTimeout(() => {
+        navigate("/ratings");
+      }, 2000);
+    }, 5000);
+  } else if (paymentMethod === "upi") {
+    setPaymentStatus("Processing UPI payment");
+    setTimeout(() => {
+      setPaymentStatus("Payemnt Recieved");
+      console.log("Payment recived");
+      navigate("/success");
+      setTimeout(() => {
+        navigate("/ratings");
+      }, 2000);
+    }, 5000);
+  } else {
+    setPaymentStatus("Invalid payment method");
+  }
+};
 
   return (
     <div className="h-screen flex flex-col justify-center items-center bg-gray-100 p-5">
