@@ -35,6 +35,7 @@ python-engineio
 python-socketio
 requests
 six
+stripe
 SQLAlchemy
 typing-extensions
 urllib3

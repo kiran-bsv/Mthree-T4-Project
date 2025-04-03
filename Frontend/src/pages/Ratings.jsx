@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import io from "socket.io-client";
+
+const socket = io("http://127.0.0.1:5000");
 
 const Ratings = () => {
   const location = useLocation();
-  const { ride } = location.state || {};
+  const [ride, setRide] = useState(location.state?.ride || JSON.parse(localStorage.getItem("rideData")));
   const navigate = useNavigate();
 
   const [rating, setRating] = useState(0);
@@ -26,16 +29,16 @@ const Ratings = () => {
             },
           }
         );
-    
+
         const existingCategories = response.data.categories.map((c) =>
           c.name.toLowerCase()
         );
-    
+
         const requiredCategories = ["cleanliness", "punctuality", "driver_behavior"];
         const missingCategories = requiredCategories.filter(
           (cat) => !existingCategories.includes(cat)
         );
-    
+
         if (missingCategories.length > 0) {
           await axios.post(
             `${import.meta.env.VITE_BASE_URL}/ratings/categories/add`,
@@ -130,7 +133,7 @@ const Ratings = () => {
         <h3 className="text-lg font-semibold">Rate Specific Aspects:</h3>
         {["cleanliness", "punctuality", "driver_behavior"].map((category) => (
           <div key={category} className="flex items-center mt-2">
-            <span className="mr-2 capitalize">{category.replace("_", " ")}:</span>
+            <span className="mr-2 capitalize">{category.replace("_", " ")}</span>
             {[1, 2, 3, 4, 5].map((score) => (
               <i
                 key={score}
