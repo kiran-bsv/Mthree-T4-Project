@@ -1,6 +1,7 @@
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
+from datetime import datetime
 
 class Captain(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -27,3 +28,40 @@ class Captain(db.Model):
 
     def generate_auth_token(self):
         return create_access_token(identity=str(self.id))
+    
+class CaptainProfile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    captain_id = db.Column(db.Integer, db.ForeignKey('captain.id'), nullable=False, unique=True)
+    fullname = db.Column(db.String(100), nullable=False)  # Stores full name
+    phone = db.Column(db.String(20), unique=True, nullable=True)
+    address = db.Column(db.String(255), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
+    profile_picture = db.Column(db.String(255), nullable=True)
+
+    captain = db.relationship('Captain', backref=db.backref('profile', uselist=False))
+
+class CaptainActivity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    captain_id = db.Column(db.Integer, db.ForeignKey('captain.id'), nullable=False, unique=True)
+    last_login = db.Column(db.DateTime, default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    ip_address = db.Column(db.String(45), nullable=True)
+
+    captain = db.relationship('Captain', backref=db.backref('activity', uselist=False))
+
+
+class CaptainEarnings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    captain_id = db.Column(db.Integer, db.ForeignKey('captain.id'), unique=True, nullable=False)
+    captain_name = db.Column(db.String(255), nullable=False)
+    total_earnings = db.Column(db.Float, default=0.0)
+
+    captain = db.relationship("Captain", backref=db.backref("earnings", uselist=False))
+
+class CaptainRatings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    captain_id = db.Column(db.Integer, db.ForeignKey('captain.id'), unique=True, nullable=False)
+    captain_name = db.Column(db.String(255), nullable=False)
+    average_rating = db.Column(db.Float, default=0.0)
+
+    captain = db.relationship("Captain", backref=db.backref("ratings", uselist=False))

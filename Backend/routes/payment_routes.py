@@ -2,8 +2,12 @@ from flask import Blueprint, request, jsonify
 from app import db
 from models.payment_model import Payment
 from models.captainPaymentHistory_model import CaptainPaymentHistory
-from models.ride_model import Ride
+from models.captain_model import CaptainEarnings, Captain
+from models.ride_model import Ride, RideInvoice, RideDiscount
+from models.transaction_model import Transaction
 from flask_jwt_extended import jwt_required, get_jwt_identity
+import uuid, random
+from datetime import datetime
 
 payments_bp = Blueprint('payments', __name__)
 
@@ -19,18 +23,66 @@ def make_payment():
     if not ride_id or not amount:
         return jsonify({"error": "Missing required payment details"}), 400
 
-    new_payment = Payment(user_id=user_id, ride_id=ride_id, amount=amount, status="completed", payment_mode=payment_mode)
-    db.session.add(new_payment)
-    db.session.commit()
+    # Check if payment already exists for this ride
+    existing_payment = Payment.query.filter_by(ride_id=ride_id, status="completed").first()
+    if existing_payment:
+        return jsonify({"error": "Payment already made for this ride"}), 400
 
-        
-    # Fetch the captain_id for this ride
+    # Fetch the ride details
     ride = Ride.query.get(ride_id)
     if not ride or not ride.captain_id:
         return jsonify({"error": "Ride not found or captain not assigned"}), 400
 
-    # Calculate captain earnings (80% of the total amount)
-    captain_earnings = round(amount * 0.8, 2)
+    captain = Captain.query.get(ride.captain_id)
+    if not captain:
+        return jsonify({"error": "Captain not found"}), 400
+
+    # Fetch ride discount if available
+    discount = RideDiscount.query.filter_by(ride_id=ride_id).first()
+    
+    if not discount:
+        # Apply a new discount only if it doesn’t already exist
+        discount_codes = ["SAVE10", "OFFER20", "DISCOUNT30"]
+        discount = RideDiscount(
+            ride_id=ride_id,
+            discount_code=random.choice(discount_codes),
+            discount_amount=round(random.uniform(10, 30), 2),
+            applied_at=datetime.utcnow()
+        )
+        db.session.add(discount)
+        db.session.commit()
+    
+    final_fare = ride.fare - discount.discount_amount  # Apply discount
+
+    # Create payment entry
+    new_payment = Payment(
+        user_id=user_id, ride_id=ride_id,
+        amount=final_fare, status="completed",
+        payment_mode=payment_mode
+    )
+    db.session.add(new_payment)
+    db.session.commit()
+
+    # Generate unique transaction ID
+    transaction_id = str(uuid.uuid4())
+    new_transaction = Transaction(
+        payment_id=new_payment.id,
+        transaction_id=transaction_id,
+        status="success",
+        amount=final_fare
+    )
+    db.session.add(new_transaction)
+
+    # Generate Invoice
+    new_invoice = RideInvoice(
+        ride_id=ride_id, user_id=user_id, captain_id=ride.captain_id,
+        base_fare=ride.fare, discount_amount=discount.discount_amount,
+        final_fare=final_fare
+    )
+    db.session.add(new_invoice)
+
+    # Calculate captain earnings (80% of the final amount)
+    captain_earnings = round(final_fare * 0.8, 2)
 
     # Store captain's earnings
     captain_payment = CaptainPaymentHistory(
@@ -41,6 +93,17 @@ def make_payment():
         amount_earned=captain_earnings,
     )
     db.session.add(captain_payment)
+
+    captain_earnings_entry = CaptainEarnings.query.filter_by(captain_id=captain.id).first()
+    if captain_earnings_entry:
+        captain_earnings_entry.total_earnings += captain_earnings
+    else:
+        captain_earnings_entry = CaptainEarnings(
+            captain_id=captain.id,
+            captain_name=f"{captain.firstname} {captain.lastname}",
+            total_earnings=captain_earnings
+        )
+        db.session.add(captain_earnings_entry)
 
     # Commit all changes
     db.session.commit()
@@ -54,6 +117,15 @@ def make_payment():
             "status": new_payment.status,
             "payment_mode": new_payment.payment_mode
         },
+        # "invoice": {
+        #     "invoice_id": new_invoice.id,
+        #     "ride_id": new_invoice.ride_id,
+        #     "amount_paid": new_invoice.amount_paid,
+        #     "discount_applied": new_invoice.discount_applied,
+        #     "final_amount": new_invoice.final_amount,
+        #     "payment_mode": new_invoice.payment_mode,
+        #     "date": new_invoice.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        # },
         "captain_payment": {
             "id": captain_payment.id,
             "ride_id": captain_payment.ride_id,

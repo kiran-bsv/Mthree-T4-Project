@@ -1,7 +1,8 @@
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models.user_model import User, db
+from models.user_model import User, db, UserActivity
 from services.user_service import create_user
+from datetime import datetime
 from werkzeug.security import check_password_hash
 from marshmallow import ValidationError
 
@@ -31,6 +32,13 @@ def login_user():
         return jsonify({'error': 'Invalid email or password'}), 401
 
     token = create_access_token(identity=str(user.id))
+    
+    # Update last_login in UserActivity
+    user_activity = UserActivity.query.filter_by(user_id=user.id).first()
+    if user_activity:
+        user_activity.last_login = datetime.utcnow()
+        db.session.commit()
+    
     return jsonify({'token': token}), 200
 
 @jwt_required()

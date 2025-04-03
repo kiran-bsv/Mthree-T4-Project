@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from models.captain_model import Captain, db
+from models.captain_model import Captain, db, CaptainProfile, CaptainActivity
 from models.vehicle_model import Vehicle
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -12,6 +12,7 @@ def register_captain():
     if Captain.query.filter_by(email=data['email']).first():
         return jsonify({'error': 'Captain already exists'}), 400
 
+    # Create captain
     new_captain = Captain(
         firstname=data['fullname']['firstname'],
         lastname=data['fullname'].get('lastname', ''),
@@ -23,7 +24,7 @@ def register_captain():
         vehicleType=data['vehicle']['vehicleType']
     )
     db.session.add(new_captain)
-    db.session.commit()
+    db.session.commit()  # Ensure ID is generated before adding related records
 
     # Create vehicle entry
     new_vehicle = Vehicle(
@@ -33,10 +34,15 @@ def register_captain():
         vehicle_capacity=data["vehicle"]["capacity"],
         vehicle_type=data["vehicle"]["vehicleType"]
     )
-
-
     db.session.add(new_vehicle)
-    db.session.commit()
+
+    # Create related profile and activity
+    fullname = f"{data['fullname']['firstname']} {data['fullname'].get('lastname', '')}".strip()
+    captain_profile = CaptainProfile(captain_id=new_captain.id, fullname=fullname)
+    captain_activity = CaptainActivity(captain_id=new_captain.id)
+
+    db.session.add_all([captain_profile, captain_activity])
+    db.session.commit()  # Commit all related records at once
 
     token = create_access_token(identity=str(new_captain.id))
     return jsonify({'token': token, 'captain': new_captain.id}), 201
@@ -49,6 +55,12 @@ def login_captain():
         return jsonify({'error': 'Invalid email or password'}), 401
 
     token = create_access_token(identity=str(captain.id))
+
+    captain_activity = CaptainActivity.query.filter_by(captain_id=captain.id).first()
+    if captain_activity:
+        captain_activity.last_login = datetime.utcnow()
+        db.session.commit()
+
     # print(captain)
     captain_data = {
         "email": captain.email,
