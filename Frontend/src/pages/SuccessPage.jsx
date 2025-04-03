@@ -1,12 +1,15 @@
 import React from "react";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const SuccessPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { ride } = location.state || {};
   useEffect(() => {
     const timer = setTimeout(() => {
-        navigate("/ratings");
+        // navigate("/ratings");
+        navigate("/ratings", { state: { ride } });
     },2000);
     return () => clearTimeout(timer);
     }, [navigate]);

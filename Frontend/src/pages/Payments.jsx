@@ -14,6 +14,25 @@ const Payments = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handlePayment = async () => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/payments/pay`,
+        { ride_id: ride.rideId, amount: ride.fare, payment_mode: paymentMethod },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setTimeout(() => {
+        setLoading(false);
+        setPaymentStatus("Payment Successful!");
+        // setTimeout(() => navigate("/ratings", { state: { ride } }), 1500);
+      }, 1000);
+    } catch (error) {
+      setPaymentStatus("Payment Failed. Try Again.");
+    }
     if (paymentMethod === "card") {
       // setPaymentStatus("Only card payments are supported via Stripe.");
       // return;
@@ -47,6 +66,7 @@ if (!token) {
       }
 
       // ✅ Send authenticated request to backend
+      
       const response = await axios.post(
         "http://127.0.0.1:5000/payment/create-checkout-session",
         { ride_id: ride?.rideId || "test", amount: ride?.fare || 100 },
@@ -61,15 +81,6 @@ if (!token) {
 
       console.log("Response from server:", response);
       const session = response.data;
-      setTimeout(() => {
-        setPaymentStatus("Payemnt Recieved");
-        console.log("Payment recived");
-        navigate("/success");
-        setTimeout(() => {
-          navigate("/ratings");
-        }, 2000);
-      }, 5000);
-
       if (session.id) {
         const stripe = await stripePromise;
         await stripe.redirectToCheckout({ sessionId: session.id });
@@ -86,10 +97,12 @@ if (!token) {
     setPaymentStatus("Processing...")
     setTimeout(() => {
       setPaymentStatus("Payemnt Recieved");
+      
       console.log("Payment recived");
-      navigate("/success");
+      navigate("/success", {state: { ride }});
       setTimeout(() => {
-        navigate("/ratings");
+        // navigate("/ratings");
+        navigate("/ratings", { state: { ride } });
       }, 2000);
     }, 5000);
   } else if (paymentMethod === "upi") {
@@ -97,15 +110,18 @@ if (!token) {
     setTimeout(() => {
       setPaymentStatus("Payemnt Recieved");
       console.log("Payment recived");
-      navigate("/success");
+      // navigate("/success");
+      navigate("/success", {state: { ride }});
       setTimeout(() => {
-        navigate("/ratings");
+        // navigate("/ratings");
+        navigate("/ratings", { state: { ride } });
       }, 2000);
     }, 5000);
   } else {
     setPaymentStatus("Invalid payment method");
   }
 };
+
 
   return (
     <div className="h-screen flex flex-col justify-center items-center bg-gray-100 p-5">
