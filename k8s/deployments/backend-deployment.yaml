@@ -32,6 +32,8 @@ spec:
                 secretKeyRef:
                   name: backend-secret
                   key: JWT_SECRET_KEY
+            - name: STRIPE_SECRET_KEY
+              value: "sk_test_51R8jsFCAERKUWFVyMTNRxoqV3Y75UdDG6qqzqQ1IOwpXV4Og23voirSMlJBRDF20SWgMJl0WJsW1eDiqAU003PiF00aPiMEDPB"
       volumes:
         - name: log-volume
           emptyDir: {}
