@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.ride_model import Ride, db
 from models.rideHistory_model import RideHistory
 from models.favouriteLocation_model import FavoriteLocation
+from models.captainRideHistory_model import CaptainRideHistory
 from marshmallow import Schema, fields, ValidationError
 from services.ride_service import create_ride, get_fare, confirm_ride, start_ride, end_ride
 
@@ -120,3 +121,21 @@ def get_favorite_locations():
 
     result = [{"pickup": f.pickup, "destination": f.destination, "count": f.count} for f in favorites]
     return jsonify({"favorite_locations": result}), 200
+
+@jwt_required()
+def get_captain_ride_history_api():
+    captain_id = get_jwt_identity()
+    captain_ride_history = CaptainRideHistory.query.filter_by(captain_id=captain_id).all()
+
+    history_data = [
+        {
+            "ride_id": ride.ride_id,
+            "status": ride.status,
+            "pickup": ride.pickup,
+            "destination": ride.destination,
+            "timestamp": ride.timestamp
+        }
+        for ride in captain_ride_history
+    ]
+    
+    return jsonify({"captain_ride_history": history_data}), 200
