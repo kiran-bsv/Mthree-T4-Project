@@ -25,13 +25,8 @@ spec:
           env:
             - name: PROMETHEUS_MULTIPROC_DIR
               value: /tmp
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: password
             - name: DB_CONNECT
-              value: "mysql+mysqlconnector://root:8599@mysql.uber.svc.cluster.local:3306/uber"
+              value: "mysql+mysqlconnector://root:AVdLiMJVPJoxcytCdJfiTyVbnFmxGcTT@gondola.proxy.rlwy.net:27694/railway"
             - name: JWT_SECRET_KEY
               valueFrom:
                 secretKeyRef:
