@@ -13,6 +13,7 @@ const Payments = () => {
   const [paymentStatus, setPaymentStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+  const [pass, setPass] = useState(false);
 
   const navigate = useNavigate();
   const handlePayment = async () => {
@@ -30,6 +31,7 @@ const Payments = () => {
       setTimeout(() => {
         setLoading(false);
         setPaymentStatus("Payment Successful!");
+        setPass(true);
         // setTimeout(() => navigate("/ratings", { state: { ride } }), 1500);
       }, 1000);
     } catch (error) {
@@ -188,7 +190,11 @@ catch (error) {
         {loading ? "Processing..." : "Pay Now"}
       </button>
 
-      {paymentStatus && <p className="mt-3 text-red-600 font-medium">{paymentStatus}</p>}
+      {paymentStatus && (
+        <p className={`mt-3 font-medium ${pass ? 'text-green-600' : 'text-red-600'}`}>
+          {paymentStatus}
+        </p>
+      )}
     </div>
   );
 };
