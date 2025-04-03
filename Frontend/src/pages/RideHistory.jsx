@@ -81,7 +81,7 @@ const RideHistory = () => {
             </thead>
             <tbody>
               {rideHistory.length > 0 ? (
-                rideHistory.slice(0, 7).map(
+                rideHistory.map(
                   (
                     ride, index // Limit rows to 7
                   ) => (

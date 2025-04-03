@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 const captainRideHistory = () => {
   const [captainRideHistory, setcaptainRideHistory] = useState([]);
-  const [favoriteLocations, setFavoriteLocations] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false); // Control visibility of favorites
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,40 +28,11 @@ const captainRideHistory = () => {
     fetchcaptainRideHistory();
   }, []);
 
-//   const handleFavoritesClick = async () => {
-//     setShowFavorites(!showFavorites); // Toggle visibility of the favorites section
-//     if (!showFavorites) {
-//       try {
-//         const token = localStorage.getItem("userToken");
-//         const response = await axios.get(
-//           `${import.meta.env.VITE_BASE_URL}/rides/favoriteRoute`,
-//           {
-//             headers: {
-//               Authorization: `Bearer ${token}`,
-//               "Content-Type": "application/json",
-//             },
-//           }
-//         );
-//         setFavoriteLocations(response.data.favorite_locations); // Assuming the response returns favorite locations data
-//       } catch (error) {
-//         console.log("Error fetching favorite locations:", error);
-//       }
-//     }
-//   };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold text-gray-900 mb-6">
         Your Ride History
       </h2>
-
-      {/* Button to toggle favorite locations visibility
-      <button
-        className="bg-black mb-4 px-6 py-2 text-white hover:bg-black-600 rounded-lg"
-        onClick={handleFavoritesClick}
-      >
-        {showFavorites ? "Hide Favorite Locations" : "View Favorite Locations"}
-      </button> */}
 
       {/* Ride History Table */}
       <div className="overflow-x-auto shadow-lg border-b border-gray-200 rounded-lg">
@@ -81,7 +50,7 @@ const captainRideHistory = () => {
             </thead>
             <tbody>
               {captainRideHistory.length > 0 ? (
-                captainRideHistory.slice(0, 7).map(
+                captainRideHistory.map(
                   (
                     ride,index // Limit rows to 7
                   ) => (
@@ -109,31 +78,6 @@ const captainRideHistory = () => {
           </table>
         </div>
       </div>
-
-      {/* Favorite Locations Section
-      {showFavorites && favoriteLocations.length > 0 && (
-        <div className="mt-8 p-6 bg-white shadow-lg rounded-lg">
-          <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-            Favorite Locations
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {favoriteLocations.map((favorite) => (
-              <div
-                key={favorite.id}
-                className="p-4 border rounded-lg shadow-sm bg-gray-50 hover:bg-gray-100"
-              >
-                <h4 className="font-medium text-xl text-gray-700">
-                  {favorite.pickup}
-                </h4>
-                <p className="text-gray-500">
-                  Destination: {favorite.destination}
-                </p>
-                <p className="text-gray-400">Used {favorite.count} times</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };
