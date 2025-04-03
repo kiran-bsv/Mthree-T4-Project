@@ -2,7 +2,8 @@ set -e
 
 # Step 1: Delete Minikube and restart it
 minikube delete --all
-minikube start
+# minikube start
+minikube start --mount --mount-string="/var/lib/mysql:/var/lib/mysql"
 
 # Step 2: Configure Docker to use Minikube’s environment
 # eval $(minikube -p minikube docker-env)

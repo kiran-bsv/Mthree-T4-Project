@@ -29,6 +29,7 @@ mysql-connector-python
 protobuf
 prometheus_client
 prometheus_flask_exporter
+psutil
 pycparser
 PyJWT
 python-dotenv
