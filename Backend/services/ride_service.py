@@ -3,6 +3,7 @@ from models.ride_model import Ride, db
 from models.rideHistory_model import RideHistory
 from models.favouriteLocation_model import FavoriteLocation
 from models.location_model import Location
+from models.captainRideHistory_model import CaptainRideHistory
 from services.map_service import get_distance_time
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.exc import SQLAlchemyError
@@ -295,6 +296,16 @@ def end_ride(ride_id, captain_id):
         status=ride.status
     )
     db.session.add(ride_history_entry)
+    db.session.commit()
+
+    captain_ride_history_entry = CaptainRideHistory(
+        captain_id=captain_id,
+        ride_id=ride.id,
+        pickup=ride.pickup,
+        destination=ride.destination,
+        status=ride.status
+    )
+    db.session.add(captain_ride_history_entry)
     db.session.commit()
 
     favorite = FavoriteLocation.query.filter_by(
