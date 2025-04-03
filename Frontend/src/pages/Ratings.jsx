@@ -1,14 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import io from "socket.io-client";
+
+const socket = io("http://127.0.0.1:5000");
 
 const Ratings = () => {
   const location = useLocation();
-  const { ride } = location.state || {};
+  // const { ride } = location.state || {};
+  const [ride, setRide] = useState(location.state?.ride || JSON.parse(localStorage.getItem("rideData")));
   const navigate = useNavigate();
 
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
+
+  useEffect(() => {
+    socket.connect(); // Ensure the socket reconnects
+
+    socket.emit("rideCompleted", ride);
+
+    socket.on("updateRideStatus", (data) => {
+      console.log("Ride Updated:", data);
+      // Handle ride update logic here
+    });
+
+    return () => {
+      socket.disconnect(); // Cleanup socket on unmount
+    };
+  }, [ride]);
 
   const submitRating = async () => {
     if (!ride) {
