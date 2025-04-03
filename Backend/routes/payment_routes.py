@@ -52,8 +52,8 @@ def create_checkout_session():
                 'quantity': 1,
             }],
             mode='payment',
-            success_url="http://localhost:5173/payment/success",
-            cancel_url="http://localhost:5173/payment/cancel",
+            # success_url="http://localhost:5173/payment/success",
+            # cancel_url="http://localhost:5173/payment/cancel",
         )
 
         return jsonify({"id": session.id}), 200  # Return the Stripe session ID
@@ -89,3 +89,11 @@ def make_payment():
     }
 
     return jsonify({"message": "Payment successful", "payment": payment_data}), 201
+
+@payments_bp.route('/history', methods=['GET'])
+@jwt_required()
+def get_payments():
+    user_id = get_jwt_identity()
+    payments = Payment.query.filter_by(user_id=user_id).all()
+    
+    return jsonify({"payments": [p.to_dict() for p in payments]}), 200

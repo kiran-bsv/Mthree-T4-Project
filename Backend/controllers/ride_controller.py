@@ -1,6 +1,8 @@
 from flask import request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.ride_model import Ride, db
+from models.rideHistory_model import RideHistory
+from models.favouriteLocation_model import FavoriteLocation
 from marshmallow import Schema, fields, ValidationError
 from services.ride_service import create_ride, get_fare, confirm_ride, start_ride, end_ride
 
@@ -92,3 +94,29 @@ def end_ride_api():
         return jsonify(err.messages), 400
     except ValueError as err:
         return jsonify({'error': str(err)}), 400
+    
+@jwt_required()
+def get_ride_history_api():
+    user_id = get_jwt_identity()
+    ride_history = RideHistory.query.filter_by(user_id=user_id).all()
+
+    history_data = [
+        {
+            "ride_id": ride.ride_id,
+            "status": ride.status,
+            "pickup": ride.pickup,
+            "destination": ride.destination,
+            "timestamp": ride.timestamp
+        }
+        for ride in ride_history
+    ]
+    
+    return jsonify({"ride_history": history_data}), 200
+
+@jwt_required()
+def get_favorite_locations():
+    user_id = get_jwt_identity()
+    favorites = FavoriteLocation.query.filter_by(user_id=user_id).order_by(FavoriteLocation.count.desc()).limit(3).all()
+
+    result = [{"pickup": f.pickup, "destination": f.destination, "count": f.count} for f in favorites]
+    return jsonify({"favorite_locations": result}), 200

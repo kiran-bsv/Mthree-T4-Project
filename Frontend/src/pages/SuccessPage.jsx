@@ -10,6 +10,7 @@ const SuccessPage = () => {
     const timer = setTimeout(() => {
         // navigate("/ratings");
         navigate("/ratings", { state: { ride } });
+        // navigate("/home")
     },2000);
     return () => clearTimeout(timer);
     }, [navigate]);

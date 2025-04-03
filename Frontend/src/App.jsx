@@ -15,6 +15,7 @@ import Riding from './pages/Riding'
 import CaptainRiding from './pages/CaptainRiding'
 import Ratings from './pages/Ratings'
 import Payments from './pages/Payments'
+import RideHistory from './pages/RideHistory'
 import SuccessPage from './pages/SuccessPage';
 import 'remixicon/fonts/remixicon.css'
 
@@ -26,6 +27,7 @@ const App = () => {
         <Route path='/' element={<Start />} />
         <Route path='/login' element={<UserLogin />} />
         <Route path='/riding' element={<Riding />} />
+        <Route path="/ride-history" element={<RideHistory />} />
         <Route path="/ratings" element={<Ratings />} />
         <Route path='/payments' element={<Payments />} />
         <Route path='/success' element={<SuccessPage />} />

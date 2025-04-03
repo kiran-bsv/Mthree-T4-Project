@@ -12,6 +12,8 @@ const Payments = () => {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [paymentStatus, setPaymentStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+
   const navigate = useNavigate();
   const handlePayment = async () => {
     try {
@@ -58,12 +60,13 @@ if (!token) {
   alert("No JWT token found. Please log in again.");
   return;
 }
+localStorage.setItem("rideData", JSON.stringify(ride));
 
       console.log("JWT Token: ", token); 
-      if (!token) {
-        setPaymentStatus("Authentication failed. Please log in.");
-        throw new Error("No JWT token found");
-      }
+      // if (!token) {
+      //   setPaymentStatus("Authentication failed. Please log in.");
+      //   throw new Error("No JWT token found");
+      // }
 
       // ✅ Send authenticated request to backend
       
@@ -81,18 +84,48 @@ if (!token) {
 
       console.log("Response from server:", response);
       const session = response.data;
-      if (session.id) {
-        const stripe = await stripePromise;
-        await stripe.redirectToCheckout({ sessionId: session.id });
-      } else {
-        throw new Error("Payment session creation failed.");
+    //   if (session.id) {
+    //     const stripe = await stripePromise;
+    //     await stripe.redirectToCheckout({ sessionId: session.id });
+    //   } else {
+    //     throw new Error("Payment session creation failed.");
+    //   }
+    // } 
+    if (session.id) {
+      const stripe = await stripePromise;
+      const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
+
+      if (!error) {
+        // ✅ Navigate to success page after Stripe checkout
+        navigate("/success", { state: { ride } });
+        localStorage.setItem("rideData", JSON.stringify(ride));
+
+        setTimeout(() => {
+          // navigate("/ratings");
+          navigate("/ratings", { state: { ride } });
+        }, 2000);
       }
-    } catch (error) {
+    } else {
+      throw new Error("Payment session creation failed.");
+    }
+  } 
+catch (error) {
       console.error("Payment Error:", error);
       setPaymentStatus(`Error: ${error.response?.data?.error || error.message || "Unknown error"}`);
     } finally {
       setLoading(false);
     }
+// setPaymentStatus("Processing...")
+// setTimeout(() => {
+//   setPaymentStatus("Payemnt Recieved");
+  
+//   console.log("Payment recived");
+//   navigate("/success", {state: { ride }});
+//   setTimeout(() => {
+//     // navigate("/ratings");
+//     navigate("/ratings", { state: { ride } });
+//   }, 2000);
+// }, 5000);
   } else if (paymentMethod === "cash"){
     setPaymentStatus("Processing...")
     setTimeout(() => {
