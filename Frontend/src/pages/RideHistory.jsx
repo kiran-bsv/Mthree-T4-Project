@@ -22,7 +22,6 @@ const RideHistory = () => {
           }
         );
         setRideHistory(response.data.ride_history);
-        console.log("Ride history:", response.data.ride_history);
       } catch (error) {
         console.log("Error fetching ride history:", error);
       }
