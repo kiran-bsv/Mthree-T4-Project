@@ -87,8 +87,8 @@ const CaptainHome = () => {
       }
     };
 
-    const locationInterval = setInterval(updateLocation, 10000);
-    updateLocation();
+    // const locationInterval = setInterval(updateLocation, 10000);
+    // updateLocation();
 
     const handleNewRide = (data) => {
       console.log("Ride Data set:", data);
