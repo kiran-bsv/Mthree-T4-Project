@@ -174,7 +174,7 @@ const CaptainHome = () => {
           },
         }
       );
-      console.log("ride.Id in captainHome.jsx 152:", ride.id);
+      // console.log("ride.Id in captainHome.jsx 152:", ride.id);
       setRidePopupPanel(false);
       setConfirmRidePopupPanel(true);
     } catch (error) {

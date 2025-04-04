@@ -16,7 +16,7 @@ def get_fare(pickup, destination):
     time = float(result["duration"])
     path = result["path"]
 
-    print(f"line 19 - distance: {distance}, duration: {time}, path: {path}")
+    # print(f"line 19 - distance: {distance}, duration: {time}, path: {path}")
     if not pickup or not destination:
         raise ValueError("Pickup and destination are required")
 
@@ -52,9 +52,9 @@ def create_ride(pickup, destination, vehicleType):
     fare, duration, distance = get_fare(pickup, destination)
     if not fare or vehicleType not in fare:
         return {"error": "Invalid fare data"}, 500
-    print(f"line 49 - fare: {fare} \n faretype: {type(fare[vehicleType])}")
+    # print(f"line 49 - fare: {fare} \n faretype: {type(fare[vehicleType])}")
     
-    print(f"line 38 \n fare: {fare} \n duration: {duration}")
+    # print(f"line 38 \n fare: {fare} \n duration: {duration}")
 
     new_ride = Ride(
         user_id=user_id,
@@ -277,7 +277,7 @@ def start_ride(ride_id, otp, captain_id):
 def end_ride(ride_id, captain_id):
     from socket_handler import socketio
     """Complete a ride."""
-    print(ride_id, captain_id)
+    # print(ride_id, captain_id)
     ride = Ride.query.filter_by(id=ride_id, captain_id=captain_id).first()
     if not ride:
         raise ValueError("Ride not found")
