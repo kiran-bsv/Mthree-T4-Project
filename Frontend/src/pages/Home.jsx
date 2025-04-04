@@ -55,7 +55,7 @@ const Home = () => {
   useEffect(() => {
     const handleRideConfirmed = (ride) => {
       console.log("user : line 56", user);
-      console.log("Ride confirmed: line 57", ride);
+      // console.log("Ride confirmed: line 57", ride);
       if (ride.userId != user.id) {
         return;
       }

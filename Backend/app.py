@@ -74,7 +74,7 @@ def create_checkout_session():
 
         amount_cents = int(float(amount) * 100)
 
-        # Create Stripe Checkout Session
+        ## Create Stripe Checkout Session 
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
