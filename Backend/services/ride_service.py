@@ -293,6 +293,7 @@ def end_ride(ride_id, captain_id):
         ride_id=ride.id,
         pickup=ride.pickup,
         destination=ride.destination,
+        fare=ride.fare,
         status=ride.status
     )
     db.session.add(ride_history_entry)

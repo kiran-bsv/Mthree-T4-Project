@@ -10,6 +10,7 @@ class RideHistory(db.Model):
     status = db.Column(db.String(50), nullable=False)  # e.g., 'completed', 'cancelled'
     pickup = db.Column(db.String(255), nullable=False)
     destination = db.Column(db.String(255), nullable=False)
+    fare = db.Column(db.Float, nullable=False, default=0.0)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships (if needed)

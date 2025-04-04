@@ -75,6 +75,7 @@ const RideHistory = () => {
               <tr className="w-full bg-grey text-black text-sm">
                 <th className="py-3 px-6 text-left">Pickup Location</th>
                 <th className="py-3 px-6 text-left">Destination</th>
+                <th className="py-3 px-6 text-left">Fare</th>
                 <th className="py-3 px-6 text-left">Status</th>
                 <th className="py-3 px-6 text-left">Date</th>
               </tr>
@@ -88,6 +89,7 @@ const RideHistory = () => {
                     <tr key={ride.id || index} className="border-b hover:bg-gray-100">
                       <td className="py-4 px-6">{ride.pickup}</td>
                       <td className="py-4 px-6">{ride.destination}</td>
+                      <td className="py-4 px-6">{ride.fare}</td>
                       <td className="py-4 px-6">{ride.status}</td>
                       <td className="py-4 px-6">
                         {new Date(ride.timestamp).toLocaleString()}
