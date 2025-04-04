@@ -1,31 +1,29 @@
 from app import app, db
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
+from handlers.logging_config import setup_logging
+from handlers.metrics import setup_metrics
+from handlers.middleware import setup_middleware
+from handlers.sql_logger import setup_sql_logging
 from socket_handler import socketio
-from prometheus_flask_exporter import PrometheusMetrics
-import logging
-from logging.handlers import RotatingFileHandler
-import os
-# import eventlet
-# import eventlet.wsgi
+from config import config
 
-# Set up Prometheus metrics
-metrics = PrometheusMetrics(app)
+# app = Flask(__name__)
+app.config.from_object(config)
 
-# Set up logging for Loki
-if not os.path.exists('logs'):
-    os.makedirs('logs')
+# db = SQLAlchemy(app)
+# CORS(app)
 
-log_handler = RotatingFileHandler('logs/app.log', maxBytes=1000000, backupCount=3)
-log_handler.setLevel(logging.INFO)
-log_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
-app.logger.addHandler(log_handler)
+# Initialize Modules
+setup_logging(app)
+setup_metrics(app)
+setup_middleware(app)
+setup_sql_logging(app, db)
+# setup_sockets(app)
 
-
-if __name__ == 'server':
+if __name__ == "server":
     with app.app_context():
         db.create_all()
-    # socketio.run(app, debug=True, port=5000, host="0.0.0.0", use_reloader=False)
-    # socketio.init_app(app, async_mode="eventlet")
-    # eventlet.wsgi.server(eventlet.listen(("0.0.0.0", 5000)), app)
     app.logger.info("Starting Flask SocketIO App")
-    # socketio.run(app, port=5000)
-    
+    # socketio.run(app, host="0.0.0.0", port=5000, debug=True)

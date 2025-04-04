@@ -10,5 +10,6 @@ data:
 
     scrape_configs:
       - job_name: 'flask-backend'
+        metrics_path: '/metrics'
         static_configs:
           - targets: ['flask-backend:5000']

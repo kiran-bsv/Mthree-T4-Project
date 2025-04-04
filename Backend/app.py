@@ -23,7 +23,8 @@ load_dotenv()
 app = Flask(__name__)
 
 # ✅ Properly configured CORS
-CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}}, supports_credentials=True)
+# CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}}, supports_credentials=True)
+CORS(app)
 
 # Stripe API key
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")

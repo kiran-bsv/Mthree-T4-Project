@@ -26,15 +26,14 @@ spec:
             - name: PROMETHEUS_MULTIPROC_DIR
               value: /tmp
             - name: DB_CONNECT
-              valueFrom:
-                secretKeyRef:
-                  name: backend-secret
-                  key: DB_CONNECT
+              value: "mysql+mysqlconnector://root:AVdLiMJVPJoxcytCdJfiTyVbnFmxGcTT@gondola.proxy.rlwy.net:27694/railway"
             - name: JWT_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: backend-secret
                   key: JWT_SECRET_KEY
+            - name: STRIPE_SECRET_KEY
+              value: "sk_test_51R8jsFCAERKUWFVyMTNRxoqV3Y75UdDG6qqzqQ1IOwpXV4Og23voirSMlJBRDF20SWgMJl0WJsW1eDiqAU003PiF00aPiMEDPB"
       volumes:
         - name: log-volume
           emptyDir: {}
