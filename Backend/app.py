@@ -22,9 +22,14 @@ load_dotenv()
 
 app = Flask(__name__)
 
+Frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+# ✅ Ensure `Frontend_url` is always a string
+allowed_origins = [Frontend_url, "http://localhost:5173", "http://127.0.0.1:5173", "http://0.0.0.0:5173"]
+
 # ✅ Properly configured CORS
-# CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}}, supports_credentials=True)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": allowed_origins}}, supports_credentials=True)
+# CORS(app)
 
 # Stripe API key
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
@@ -83,8 +88,8 @@ def create_checkout_session():
                 'quantity': 1,
             }],
             mode='payment',
-            success_url='http://localhost:5173/success',
-            cancel_url='http://localhost:5173/cancel',
+            success_url=f'{Frontend_url}/success',
+            cancel_url=f'{Frontend_url}/cancel',
         )
 
         return jsonify({'id': session.id})
