@@ -7,27 +7,64 @@ const socket = io("http://127.0.0.1:5000");
 
 const Ratings = () => {
   const location = useLocation();
-  // const { ride } = location.state || {};
   const [ride, setRide] = useState(location.state?.ride || JSON.parse(localStorage.getItem("rideData")));
   const navigate = useNavigate();
 
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
+  const [categoryRatings, setCategoryRatings] = useState({
+    cleanliness: 0,
+    punctuality: 0,
+    driver_behavior: 0,
+  });
 
   useEffect(() => {
-    socket.connect(); // Ensure the socket reconnects
+    const checkAndAddCategories = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/ratings/categories`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            },
+          }
+        );
 
-    socket.emit("rideCompleted", ride);
+        const existingCategories = response.data.categories.map((c) =>
+          c.name.toLowerCase()
+        );
 
-    socket.on("updateRideStatus", (data) => {
-      console.log("Ride Updated:", data);
-      // Handle ride update logic here
-    });
+        const requiredCategories = ["cleanliness", "punctuality", "driver_behavior"];
+        const missingCategories = requiredCategories.filter(
+          (cat) => !existingCategories.includes(cat)
+        );
 
-    return () => {
-      socket.disconnect(); // Cleanup socket on unmount
+        if (missingCategories.length > 0) {
+          await axios.post(
+            `${import.meta.env.VITE_BASE_URL}/ratings/categories/add`,
+            {
+              categories: missingCategories.map((name) => ({ name })),
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log("Missing categories added:", missingCategories);
+        }
+      } catch (error) {
+        console.error("Error checking/adding categories:", error.response?.data || error.message);
+      }
     };
-  }, [ride]);
+
+    checkAndAddCategories();
+  }, []);
+
+  const handleCategoryRating = (category, score) => {
+    setCategoryRatings((prev) => ({ ...prev, [category]: score }));
+  };
 
   const submitRating = async () => {
     if (!ride) {
@@ -43,6 +80,11 @@ const Ratings = () => {
           ride_id: ride.rideId,
           rating,
           review,
+          category_ratings: [
+            { category: "Cleanliness", score: categoryRatings.cleanliness },
+            { category: "Punctuality", score: categoryRatings.punctuality },
+            { category: "Driver Behavior", score: categoryRatings.driver_behavior },
+          ],
         },
         {
           headers: {
@@ -53,14 +95,9 @@ const Ratings = () => {
       );
 
       console.log("Rating submitted:", response.data);
-      setTimeout(() => {
-        navigate("/home");
-      }, 800);
+      setTimeout(() => navigate("/home"), 800);
     } catch (error) {
-      console.error(
-        "Error submitting rating:",
-        error.response?.data || error.message
-      );
+      console.error("Error submitting rating:", error.response?.data || error.message);
       alert("Failed to submit rating. Please try again.");
     }
   };
@@ -90,6 +127,27 @@ const Ratings = () => {
         value={review}
         onChange={(e) => setReview(e.target.value)}
       />
+
+      {/* Fixed Categories */}
+      <div className="mt-4 w-3/4">
+        <h3 className="text-lg font-semibold">Rate Specific Aspects:</h3>
+        {["cleanliness", "punctuality", "driver_behavior"].map((category) => (
+          <div key={category} className="flex items-center mt-2">
+            <span className="mr-2 capitalize">{category.replace("_", " ")}</span>
+            {[1, 2, 3, 4, 5].map((score) => (
+              <i
+                key={score}
+                className={`text-xl mx-1 cursor-pointer ${
+                  score <= categoryRatings[category] ? "text-yellow-400" : "text-gray-300"
+                }`}
+                onClick={() => handleCategoryRating(category, score)}
+              >
+                ★
+              </i>
+            ))}
+          </div>
+        ))}
+      </div>
 
       <button
         className="mt-3 bg-green-600 text-white p-2 rounded-lg"

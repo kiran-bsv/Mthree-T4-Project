@@ -107,6 +107,7 @@ def get_ride_history_api():
             "status": ride.status,
             "pickup": ride.pickup,
             "destination": ride.destination,
+            "fare": ride.fare,
             "timestamp": ride.timestamp
         }
         for ride in ride_history
