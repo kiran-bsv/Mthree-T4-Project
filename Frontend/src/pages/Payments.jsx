@@ -164,16 +164,17 @@ catch (error) {
       </p>
 
       <div className="w-full max-w-md bg-white p-5 rounded-lg shadow-lg mt-5">
-        <h3 className="text-lg font-semibold mb-3">Select Payment Method</h3>
+        <h3 className="text-lg font-semibold mb-8">Select Payment Method</h3>
         {["cash", "card", "upi"].map((method) => (
           <button
             key={method}
-            className={`flex items-center gap-3 w-full p-3 rounded-lg border ${
+            className={`flex items-center gap-3 w-full p-3 rounded-lg border mb-3  ${
               method === paymentMethod
                 ? "border-green-500 bg-green-100"
                 : "border-gray-300"
             }`}
             onClick={() => setPaymentMethod(method)}
+            
           >
             {method.charAt(0).toUpperCase() + method.slice(1)}
           </button>
@@ -181,7 +182,7 @@ catch (error) {
       </div>
 
       <button
-        className="mt-5 w-full max-w-md bg-black text-white font-semibold p-3 rounded-lg"
+        className="mt-5 w-full max-w-md bg-black hover:bg-green-500 text-white font-semibold p-3 rounded-lg"
         onClick={handlePayment}
         disabled={loading}
       >

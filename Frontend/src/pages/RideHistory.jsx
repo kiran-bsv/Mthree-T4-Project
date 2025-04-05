@@ -28,6 +28,7 @@ const RideHistory = () => {
     };
 
     fetchRideHistory();
+    // console.log('this si the ride history ' , rideHistory)
   }, []);
 
   const handleFavoritesClick = async () => {
@@ -77,6 +78,7 @@ const RideHistory = () => {
                 <th className="py-3 px-6 text-left">Destination</th>
                 <th className="py-3 px-6 text-left">Status</th>
                 <th className="py-3 px-6 text-left">Date</th>
+                {/* <th className="py-3 px-6 text-left">Date</th> */}
               </tr>
             </thead>
             <tbody>
@@ -86,6 +88,7 @@ const RideHistory = () => {
                     ride, index // Limit rows to 7
                   ) => (
                     <tr key={ride.id || index} className="border-b hover:bg-gray-100">
+                      {/* {{rideHistory}} */}
                       <td className="py-4 px-6">{ride.pickup}</td>
                       <td className="py-4 px-6">{ride.destination}</td>
                       <td className="py-4 px-6">{ride.status}</td>

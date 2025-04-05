@@ -14,6 +14,9 @@ import { UserDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import LiveTracking from "../components/LiveTracking";
 import locations from "../locations";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -154,6 +157,7 @@ const Home = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
+    // console.log(pickup,destination)
   };
 
   useGSAP(
@@ -244,13 +248,13 @@ const Home = () => {
   async function findTrip() {
     if (!locations.includes(pickup)) {
       alert(
-        "Whoa there! Our magic carpet doesn't fly to that pickup spot. Try another one from the list!"
+        "LOL there! Our magic carpet doesn't fly to that pickup spot. Try another one from the list! or check the empty field"
       );
       return;
     }
     if (!locations.includes(destination)) {
       alert(
-        "Yikes! Our GPS can't find that destination. Maybe it's on Mars? Try a different one!"
+        "Yikes! Our GPS can't find that destination. Maybe it's on Mars? Try a different one!  or check the empty field"
       );
       return;
     }
@@ -320,6 +324,50 @@ const Home = () => {
     }
   }
 
+  function AutoPlayMethods() {
+    let sliderRef = useRef(null);
+  
+  
+    const settings = {
+     
+      dots: true,
+      infinite: true,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      autoplay: true,
+      // autoplaySpeed: 2000,
+      // variableWidth: true
+    };
+  
+    return (
+      <div>      
+      <div className="slider-container h-96 mt-[-40px] overflow-hidden">       
+        <Slider ref={sliderRef} {...settings}>
+          <div className="" >
+            <img className="slide h-full object-cover  w-3/4"
+              src="https://www.papayaqatar.com/wp-content/uploads/2023/12/uber-clone-banner.webp"
+              alt="Slide 1"
+            />
+          </div>
+          <div>
+            <img className="slide h-96  w-3/4"
+              src="https://dianapps.com/blog/wp-content/uploads/2022/12/1080600.png"
+              alt="Slide 2"
+            />
+          </div>
+          <div>
+            <img className="slide h-96  w-3/4 "
+              src="https://www.shutterstock.com/image-vector/online-taxi-concept-people-call-260nw-1839852040.jpg"
+              alt="Slide 3"
+            />
+          </div>
+         
+        </Slider>        
+      </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen relative overflow-hidden ">
       {/* <img
@@ -327,22 +375,31 @@ const Home = () => {
         src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
         alt=""
       /> */}
-      <nav className="bg-white text-black flex justify-between items-center p-4 z-50 relative ">
-        <img
+      <nav className="text-black flex justify-between items-center p-4 z-50 relative bg-black border-gray-200 dark:bg-black-900 ">
+        {/* <img
           className="w-16"
           src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
           alt="Uber Logo"
-        />
-        <div className="flex items-center gap-8">
+        /> */}
+        <img src="data:image/png;base64,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" class="h-8" alt="Flowbite Logo" />
+            <span class="ml-[-28cm] text-2xl font-semibold whitespace-nowrap text-white">Uber</span>
+        <div className="flex items-center gap-8 mr-3">
           <button
-            className="bg-black text-white px-4 py-2 mx-2 rounded-lg"
+            className="bg-black text-white px-4 py-2 mx-2 rounded-lg hover:bg-gray-400"
             onClick={() => navigate("/ride-history")}
           >
             Ride History
           </button>
-          <span className="text-lg">{user.fullname.firstname}</span>
-        </div>
+          <div className='hover:bg-gray-400 pl-4 pr-3 rounded-lg'>
+          <span className="text-lg text-white ml-[-0.3cm] hover:bg-gray-400">{user.fullname.firstname}</span>
+        
+          </div>
+          </div>
       </nav>
+      <div className="   mt-10 ml-[250px] mr-4 ">
+        <AutoPlayMethods></AutoPlayMethods> 
+      </div>
+
       <div className="h-screen w-screen">
         {/* image for temporary use  */}
         {/* <LiveTracking /> */}
@@ -360,9 +417,10 @@ const Home = () => {
             }}
             className="absolute opacity-0 right-6 top-6 text-2xl"
           >
-            <i className="ri-arrow-down-wide-line"></i>
+            {/* <i className="ri-arrow-down-wide-line"></i> */}
+            <i class="ri-arrow-down-s-line"></i>
           </h5>
-          <h4 className="text-2xl font-semibold">Find a trip</h4>
+          <h4 className="text-2xl font-semibold ">Find a trip</h4>
 
           <form
             className="relative py-3"
@@ -383,6 +441,7 @@ const Home = () => {
               type="text"
               placeholder="Add a pick-up location"
             />
+            
             <input
               onClick={() => {
                 setPanelOpen(true);
@@ -397,7 +456,7 @@ const Home = () => {
           </form>
           <button
             onClick={findTrip}
-            className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full"
+            className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full hover:bg-gray-500 p-2 cursor-pointer"
           >
             Find Trip
           </button>
@@ -433,7 +492,7 @@ const Home = () => {
       </div>
       <div
         ref={confirmRidePanelRef}
-        className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
+        className="fixed w-full z-50 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
       >
         <ConfirmRide
           createRide={createRide}

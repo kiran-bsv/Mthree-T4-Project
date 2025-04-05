@@ -13,10 +13,10 @@ const RidePopUp = (props) => {
     // }, []);
 
     return (
-        <div>
+        <div className='h-[520px]'>
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
                 props.setRidePopupPanel(false)
-            }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
+            }}><i className="text-3xl text-gray-400 ri-arrow-down-wide-line hover:text-gray-600"></i></h5>
             <h3 className='text-2xl font-semibold mb-5'>New Ride Available!</h3>
             <div className='flex items-center justify-between p-3 bg-yellow-400 rounded-lg mt-4'>
                 <div className='flex items-center gap-3 '>
@@ -30,21 +30,21 @@ const RidePopUp = (props) => {
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="ri-map-pin-user-fill"></i>
                         <div>
-                        <h3 className='text-lg font-medium'>{props.ride?.pickup}</h3>
+                        <h3 className='font-semibold font-medium'>{props.ride?.pickup}</h3>
                         <p className='text-sm -mt-1 text-gray-600'>{props.ride?.pickup}</p>
                         </div>
                     </div>
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="text-lg ri-map-pin-2-fill"></i>
                         <div>
-                        <h3 className='text-lg font-medium'>{props.ride?.destination}</h3>
+                        <h3 className='font-semibold font-medium'>{props.ride?.destination}</h3>
                         <p className='text-sm -mt-1 text-gray-600'>{props.ride?.destination}</p>
                         </div>
                     </div>
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="text-lg ri-map-pin-2-fill"></i>
                         <div>
-                        <h3 className='text-lg font-medium'>
+                        <h3 className='font-semibold font-medium'>
                                 {props.ride?.distance}kms&nbsp;&nbsp;
                                 {(() => {
                                     const totalMinutes = Math.round((props.ride?.duration || 0) * 60);
@@ -60,27 +60,29 @@ const RidePopUp = (props) => {
                     <div className='flex items-center gap-5 p-3'>
                         <i className="ri-currency-line"></i>
                         <div>
-                            <h3 className='text-lg font-medium'>₹{props.ride?.fare} </h3>
+                            <h3 className='font-semibold font-medium'>₹{props.ride?.fare} </h3>
                             <p className='text-sm -mt-1 text-gray-600'>Cash</p>
                         </div>
                     </div>
                 </div>
-                {(<div className='mt-5 w-full '>
+                {( 
+                    <div className='mt-5 w-full flex place-content-around gap-1 '>
                     <button onClick={() => {
                         props.setConfirmRidePopupPanel(true)
                         props.confirmRide() // user end
 
-                    }} className=' bg-green-600 w-full text-white font-semibold p-2 px-10 rounded-lg'>Accept</button>
+                    }} className='mt-2 bg-green-600 hover:bg-green-700 w-[450px] text-white font-semibold p-2 px-10 rounded-lg pl-10 h-[50px]'>Accept</button>
 
                     <button onClick={() => {
                         props.setRidePopupPanel(false)
                         props.setConfirmRidePopupPanel(false)
                         localStorage.setItem('captainStatus', 'open')
 
-                    }} className='mt-2 w-full bg-gray-300 text-gray-700 font-semibold p-2 px-10 rounded-lg'>Ignore</button>
+                    }} className='mt-2 p-2 w-[450px] bg-red-500 hover:bg-red-700 text-white font-semibold p-2 px-10 rounded-lg h-[50px]'>Ignore</button>
 
 
-                </div>)}
+                
+                </div>  )}
             </div>
         </div>
     )

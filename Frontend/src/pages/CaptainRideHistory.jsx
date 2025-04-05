@@ -77,6 +77,7 @@ const captainRideHistory = () => {
                 <th className="py-3 px-6 text-left">Destination</th>
                 <th className="py-3 px-6 text-left">Status</th>
                 <th className="py-3 px-6 text-left">Date</th>
+                
               </tr>
             </thead>
             <tbody>

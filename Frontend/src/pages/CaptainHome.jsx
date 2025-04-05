@@ -222,20 +222,23 @@ const CaptainHome = () => {
             src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
             alt="Uber Logo"
           />
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-8 ">
             <button
-              className="bg-black text-white px-4 py-2 mx-2 rounded-lg"
+              className="bg-black text-white px-4 py-2 mx-2 mr-[-17px] rounded-lg hover:bg-gray-400"
               onClick={() => navigate("/captain-ride-history")}
             >
               Ride History
             </button>
             <button
-              className="bg-black text-white px-4 py-2 mx-2 rounded-lg"
+              className="bg-black text-white px-4 py-2 mx-2 mr-[-12px] rounded-lg hover:bg-gray-400"
               onClick={() => navigate("/captain-payment-history")}
             >
               Payment History
             </button>
-            <span className="text-lg">{captain.fullname.firstname}</span>
+            <div className="flex">
+            <img className='h-10 w-10 rounded-full object-cover mr-2' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s" alt="" />
+            <span className="text-lg mr-7 pt-1">{captain.fullname.firstname}</span>
+            </div>
           </div>
         </nav>
         {/* <Link
@@ -245,14 +248,15 @@ const CaptainHome = () => {
           <i className="text-lg font-medium ri-logout-box-r-line"></i>
         </Link> */}
       {/* </div> */}
-      <div className="h-3/5">
+      <div className="h-2/4 justify-center display: flex" >
         <img
           className="h-full w-full object-cover"
           src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
           alt=""
+          style={{height:350, width:1300,mb:10}}
         />
       </div>
-      <div className="h-2/5 p-6">
+      <div className="h-2/5 p-6 pt-10">
         <CaptainDetails />
       </div>
       <div
