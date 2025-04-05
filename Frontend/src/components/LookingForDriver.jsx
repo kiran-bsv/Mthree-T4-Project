@@ -5,7 +5,7 @@ const LookingForDriver = (props) => {
         <div>
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
                 props.setVehicleFound(false)
-            }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
+            }}><i className="text-3xl text-gray-400 hover:text-gray-600 ri-arrow-down-wide-line"></i></h5>
             <h3 className='text-2xl font-semibold mb-5'>Looking for a Driver</h3>
 
             <div className='flex gap-2 justify-between flex-col items-center'>

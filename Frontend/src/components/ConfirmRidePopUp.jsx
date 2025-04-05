@@ -54,7 +54,7 @@ const ConfirmRidePopUp = (props) => {
 
     }
     return (
-        <div>
+        <div className='mt-11'>
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
                 props.setRidePopupPanel(false)
             }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
@@ -71,37 +71,39 @@ const ConfirmRidePopUp = (props) => {
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="ri-map-pin-user-fill"></i>
                         <div>
-                            <h3 className='text-lg font-medium'>562/11-A</h3>
+                            <h3 className='text-semi-bold font-medium'>562/11-A</h3>
                             <p className='text-sm -mt-1 text-gray-600'>{props.ride?.pickup}</p>
                         </div>
                     </div>
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="text-lg ri-map-pin-2-fill"></i>
                         <div>
-                            <h3 className='text-lg font-medium'>562/11-A</h3>
+                            <h3 className='text-semi-bold font-medium'>562/11-A</h3>
                             <p className='text-sm -mt-1 text-gray-600'>{props.ride?.destination}</p>
                         </div>
                     </div>
                     <div className='flex items-center gap-5 p-3'>
                         <i className="ri-currency-line"></i>
                         <div>
-                            <h3 className='text-lg font-medium'>₹{props.ride?.fare} </h3>
+                            <h3 className='text-semi-bold font-medium'>₹{props.ride?.fare} </h3>
                             <p className='text-sm -mt-1 text-gray-600'>Cash</p>
                         </div>
                     </div>
                 </div>
 
-                <div className='mt-6 w-full'>
+                <div className='mt-6 w-full '>
                     <form onSubmit={submitHander}>
-                        <input value={otp} onChange={(e) => setOtp(e.target.value)} type="text" className='bg-[#eee] px-6 py-4 font-mono text-lg rounded-lg w-full mt-3' placeholder='Enter OTP' />
+                        <input value={otp} onChange={(e) => setOtp(e.target.value)} type="text" className='bg-[#eee] px-6 py-4 font-mono text-lg rounded-lg w-full mt-0' placeholder='Enter OTP' />
 
-                        <button className='w-full mt-5 text-lg flex justify-center bg-green-600 text-white font-semibold p-3 rounded-lg'>Confirm</button>
+                        <div className='flex place-content-between gap-5 '>
+                        <button className='w-2/5 mt-5 text-lg flex justify-center bg-green-600 hover:bg-green-800 text-white font-semibold p-3 rounded-lg'>Confirm</button>
                         <button onClick={() => {
                             props.setConfirmRidePopupPanel(false)
                             props.setRidePopupPanel(false)
                             localStorage.setItem('captainStatus', 'open')
 
-                        }} className='w-full mt-2 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg'>Cancel</button>
+                        }} className='w-2/5 mt-5 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg hover:bg-red-800'>Cancel</button>
+                        </div>
 
                     </form>
                 </div>

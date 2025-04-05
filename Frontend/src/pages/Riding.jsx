@@ -25,8 +25,9 @@ const Riding = () => {
             <Link to='/home' className='fixed right-2 top-2 h-10 w-10 bg-white flex items-center justify-center rounded-full'>
                 <i className="text-lg font-medium ri-home-5-line"></i>
             </Link>
-            <div className='h-1/2'>
+            <div className='h-1/2 '>
                 {/* <LiveTracking /> */}
+                <img className='h-full ml-[450px]' src="https://media1.tenor.com/m/whxn4EAvy8kAAAAC/aisyamoda.gif" alt="" />
 
             </div>
             <div className='h-1/2 p-4'>
@@ -59,7 +60,8 @@ const Riding = () => {
                         </div>
                     </div>
                 </div>
-                <button className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg ' onClick={() => navigate('/payments', { state: { ride } })}>Make a Payment</button>
+                
+                <button className='w-full mt-5 bg-green-600 hover:bg-green-800 text-white font-semibold p-2 rounded-lg ' onClick={() => navigate('/payments', { state: { ride } })}>Make a Payment</button>
             </div>
         </div>
     )
