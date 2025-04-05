@@ -37,8 +37,14 @@ const CaptainRiding = () => {
                 <Link to='/captain-home' className=' h-10 w-10 bg-white flex items-center justify-center rounded-full'>
                     <i className="text-lg font-medium ri-logout-box-r-line"></i>
                 </Link>
+                
             </div>
 
+            <div className='h-3/4 pl-96 mb-0'>
+                <img src="https://media1.tenor.com/m/ErhKa7VxL6QAAAAd/server-is-on-india.gif" alt="" />
+            </div>
+
+            
             <div className='h-1/5 p-6 flex items-center justify-between relative bg-yellow-400 pt-10'
                 onClick={() => {
                     setFinishRidePanel(true)
