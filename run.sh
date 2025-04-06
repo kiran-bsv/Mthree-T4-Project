@@ -35,6 +35,7 @@ build_and_load m3t4-frontend Frontend
 # Step 5: Deploy Kubernetes manifests
 echo "🔐 Applying secrets and deploying all services..."
 kubectl apply -f k8s/promtail-daemonset.yaml --namespace=uber
+kubectl apply -f k8s/promtail-serviceaccount-rbac.yaml --namespace=uber
 kubectl apply -f k8s/secrets --namespace=uber
 kubectl apply -f k8s/services --namespace=uber
 
@@ -52,6 +53,7 @@ kubectl create configmap frontend-config \
 
 kubectl apply -f k8s/configs --namespace=uber   # Other configs
 kubectl apply -f k8s/deployments --namespace=uber
+
 
 # Step 6: Wait for deployments to become ready
 deployments=(flask-backend frontend prometheus grafana loki)

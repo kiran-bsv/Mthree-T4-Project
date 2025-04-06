@@ -15,7 +15,8 @@ def setup_logging(app):
 
     log_handler = RotatingFileHandler(f"{log_dir}/app.log", maxBytes=1_000_000, backupCount=3)
     log_handler.setLevel(logging.DEBUG)
-    log_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
+    # log_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
+    log_handler.setFormatter(logging.Formatter('%(asctime)s level=%(levelname)s module=%(module)s message="%(message)s"'))
 
     # Add the custom filter to the log handler
     log_handler.addFilter(MetricsFilter())

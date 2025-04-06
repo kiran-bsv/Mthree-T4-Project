@@ -19,15 +19,8 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "200m"
           volumeMounts:
-            - name: log-volume
+            - name: log
               mountPath: /app/logs
           env:
             - name: PROMETHEUS_MULTIPROC_DIR
@@ -48,6 +41,14 @@ spec:
                 configMapKeyRef:
                   name: frontend-config
                   key: FRONTEND_URL
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
       volumes:
-        - name: log-volume
-          emptyDir: {}
+        - name: log
+          hostPath:
+            path: /app/logs
