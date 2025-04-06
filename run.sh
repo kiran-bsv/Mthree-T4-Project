@@ -4,7 +4,8 @@ set -e
 
 # Step 1: Delete Minikube and restart it
 minikube delete --all
-minikube start
+# minikube start
+minikube start --cpus=4 --memory=4096mb
 # minikube start --mount --mount-string="/var/lib/mysql:/var/lib/mysql"
 
 # Step 2: Configure Docker to use Minikube’s environment
@@ -28,8 +29,8 @@ build_and_load() {
     cd ..
 }
 
-build_and_load backend-api Backend
-build_and_load frontend Frontend
+build_and_load m3t4-backend Backend
+build_and_load m3t4-frontend Frontend
 
 # Step 5: Deploy Kubernetes manifests
 echo "🔐 Applying secrets and deploying all services..."

@@ -15,10 +15,17 @@ spec:
     spec:
       containers:
         - name: flask-backend
-          image: backend-api:latest
+          image: m3t4-backend:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
           volumeMounts:
             - name: log-volume
               mountPath: /app/logs
@@ -34,6 +41,8 @@ spec:
                   key: JWT_SECRET_KEY
             - name: STRIPE_SECRET_KEY
               value: "sk_test_51R8jsFCAERKUWFVyMTNRxoqV3Y75UdDG6qqzqQ1IOwpXV4Og23voirSMlJBRDF20SWgMJl0WJsW1eDiqAU003PiF00aPiMEDPB"
+            - name: LOGS_PATH
+              value: /app/logs
             - name: FRONTEND_URL
               valueFrom:
                 configMapKeyRef:
