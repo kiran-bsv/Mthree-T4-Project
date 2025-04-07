@@ -1,3 +1,16 @@
+/**
+ * captainRideHistory.jsx
+ *
+ * Description:
+ * This component displays the ride history for a captain by:
+ *  - Fetching the ride history using the captain's JWT token
+ *  - Displaying a table of completed rides with pickup, destination, status, and date
+ *  - Handling error scenarios and providing fallback UI if no data is found
+ *
+ * It uses Axios for API calls, React Router for navigation, and Tailwind CSS for styling.
+ */
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +20,7 @@ const captainRideHistory = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch captain's ride history on component mount
     const fetchcaptainRideHistory = async () => {
       try {
         const token = localStorage.getItem("captainToken");
@@ -19,6 +33,9 @@ const captainRideHistory = () => {
             },
           }
         );
+
+        
+        // Set the retrieved ride history in state
         setcaptainRideHistory(response.data.captain_ride_history);
       } catch (error) {
         console.log("Error fetching ride history:", error);

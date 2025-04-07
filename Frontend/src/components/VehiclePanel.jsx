@@ -1,12 +1,20 @@
+// VehiclePanel Component
+// This component displays a list of available vehicle options (Car, Auto, Moto) 
+// for the user to choose from. Each option shows vehicle details like ETA, 
+// fare, description, and triggers selection and confirmation when clicked.
+
 import React from 'react'
 
 const VehiclePanel = (props) => {
     return (
         <div>
+             {/* Close button to hide vehicle panel */}
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
                 props.setVehiclePanel(false)
             }}><i className="text-3xl text-gray-600 ri-arrow-down-wide-line hover:text-black"></i></h5>
             <h3 className='text-2xl font-semibold mb-5'>Choose a Vehicle</h3>
+
+            {/* --- Car Option --- */}
             <div onClick={() => {
                 props.setConfirmRidePanel(true)
                 props.selectVehicle('car')
@@ -20,6 +28,7 @@ const VehiclePanel = (props) => {
                 <h2 className='text-lg font-semibold mr-8'>₹{props.fare.car}</h2>
             </div>
             
+             {/* --- Auto Option --- */}
             <div onClick={() => {
                 props.setConfirmRidePanel(true)
                 props.selectVehicle('auto')
@@ -33,6 +42,7 @@ const VehiclePanel = (props) => {
                 <h2 className='text-lg font-semibold mr-8'>₹{props.fare.auto}</h2>
             </div>
 
+             {/* --- Moto Option --- */}
             <div onClick={() => {
                 props.setConfirmRidePanel(true)
                 props.selectVehicle('moto')
