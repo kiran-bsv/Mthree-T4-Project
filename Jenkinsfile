@@ -14,13 +14,13 @@ pipeline {
                 sh './run-jenkins.sh'
             }
         }
-        stage('Port Forwarding') {
-            steps {
-                echo '🏗 Running host.sh to port forward...'
-                sh 'chmod +x host.sh'
-                sh './host.sh'
-            }
-        }
+        // stage('Port Forwarding') {
+        //     steps {
+        //         echo '🏗 Running host.sh to port forward...'
+        //         sh 'chmod +x host.sh'
+        //         sh './host.sh'
+        //     }
+        // }
     }
 
     post {
