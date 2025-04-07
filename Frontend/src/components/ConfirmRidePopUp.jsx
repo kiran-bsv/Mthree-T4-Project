@@ -27,7 +27,7 @@ const ConfirmRidePopUp = (props) => {
             }, 7000); 
         }
 
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
+        try {const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
             params: {
                 rideId: props.ride.ride_id,
                 otp: otp
@@ -49,6 +49,12 @@ const ConfirmRidePopUp = (props) => {
             props.setConfirmRidePopupPanel(false)
             props.setRidePopupPanel(false)
             navigate('/captain-riding', { state: { ride: props.ride } })
+        }} catch (error){
+            if (error.response && error.response.status === 400) {
+                alert("Invalid OTP. Please try again.");
+            } else {
+                alert("An error occurred. Please try again later.");
+            }
         }
 
 
