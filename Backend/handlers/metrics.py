@@ -1,5 +1,5 @@
 from prometheus_flask_exporter import PrometheusMetrics
-from prometheus_client import Counter, Histogram, Gauge
+from prometheus_client import Counter, Histogram, Gauge, Summary
 from flask import Flask, request
 import psutil
 import time
@@ -17,6 +17,10 @@ MEMORY_USAGE = Gauge("flask_memory_usage", "Memory usage of the application (in 
 NETWORK_SENT = Gauge("flask_network_sent", "Total network data sent (in MB)")
 NETWORK_RECEIVED = Gauge("flask_network_received", "Total network data received (in MB)")
 
+FRONTEND_LOAD_TIME = Summary('frontend_load_time_seconds', 'Frontend page load time reported from React')
+
+
+
 def update_system_metrics():
     """Update CPU, Memory, and Network metrics at the start of each request."""
     CPU_USAGE.set(psutil.cpu_percent())
@@ -29,6 +33,18 @@ def update_system_metrics():
 def setup_metrics(app):
     """Setup Prometheus metrics for monitoring Flask app performance."""
     metrics = PrometheusMetrics(app)
+
+    @app.route('/frontend-metrics', methods=['POST'])
+    def frontend_metrics():
+        data = request.json
+        load_time = data.get('loadTime')
+        if load_time:
+            try:
+                FRONTEND_LOAD_TIME.observe(float(load_time))
+            except Exception as e:
+                EXCEPTION_COUNT.labels(exception_type=e.__class__.__name__).inc()
+        return '', 204
+
 
     @app.before_request
     def start_timer():

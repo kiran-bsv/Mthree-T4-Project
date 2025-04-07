@@ -23,9 +23,11 @@ import CaptainRideHistory from './pages/CaptainRideHistory'
 import CaptainPaymentHistory from './pages/CaptainPaymentHistory'
 
 import 'remixicon/fonts/remixicon.css'
+import useMetricsTracker from './hooks/useMetricsTracker'
 
 const App = () => {
-
+  useMetricsTracker();
+  
   return (
     <div>
       <Routes>
