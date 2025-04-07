@@ -22,7 +22,7 @@ spec:
           - name: loki-config
             mountPath: /etc/loki
           - name: wal-storage
-            mountPath: /wal               # 👈 Mount writable volume here
+            mountPath: /wal             
         resources:
           requests:
             memory: "256Mi"
@@ -35,4 +35,4 @@ spec:
           configMap:
             name: loki-config
         - name: wal-storage
-          emptyDir: {}                   # 👈 Simple writable volume
+          emptyDir: {}                
