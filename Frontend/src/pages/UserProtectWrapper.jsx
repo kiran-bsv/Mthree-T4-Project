@@ -1,3 +1,22 @@
+/**
+ * File: UserProtectWrapper.jsx
+ * Purpose: This component provides route protection and authentication state management for protected routes.
+ * 
+ * Features:
+ * - Verifies user authentication status
+ * - Manages loading states during authentication checks
+ * - Redirects unauthenticated users to the login page
+ * - Fetches and updates user profile data
+ * - Uses context for user state management
+ * - Handles token validation and cleanup
+ * 
+ * Usage:
+ * - Wraps protected routes to ensure authentication
+ * - Manages user session state
+ * - Provides loading states during authentication checks
+ * - Handles unauthorized access attempts
+ */
+
 import React, { useContext, useEffect, useState } from 'react'
 import { UserDataContext } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'

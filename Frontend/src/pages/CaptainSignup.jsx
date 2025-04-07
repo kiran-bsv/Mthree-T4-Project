@@ -1,3 +1,26 @@
+/**
+ * CaptainSignup.jsx
+ *
+ * This component renders the signup page for a new Uber captain (driver).
+ * It includes:
+ * - A navigation bar with the Uber logo
+ * - A signup form for captain details such as:
+ *    - Full name
+ *    - Email and password
+ *    - Vehicle details (color, plate number, capacity, type)
+ * - Input data is submitted to the backend API for registration
+ * - On successful registration:
+ *    - Stores the captain's data and token in localStorage/context
+ *    - Redirects to the captain's home page
+ *
+ * Technologies used:
+ * - React functional components and hooks (useState, useContext)
+ * - React Router (useNavigate)
+ * - Axios for HTTP requests
+ * - Tailwind CSS for styling
+ * - Context API for global state (CaptainDataContext)
+ */
+
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CaptainDataContext } from '../context/CapatainContext'
@@ -8,6 +31,7 @@ const CaptainSignup = () => {
 
   const navigate = useNavigate()
 
+  // State variables to store form inputs
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
@@ -19,6 +43,7 @@ const CaptainSignup = () => {
   const [vehicleType, setvehicleType] = useState('')
 
 
+  // Access captain context to store data globally
   const { captain, setCaptain } = React.useContext(CaptainDataContext)
 
 

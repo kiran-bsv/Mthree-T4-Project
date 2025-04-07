@@ -1,3 +1,27 @@
+/**
+ * Payments.jsx
+ * -------------
+ * Handles the payment flow for a ride in the ride-hailing application.
+ *
+ * Key Functionalities:
+ *  - Renders a UI for selecting payment methods (Cash, Card, UPI)
+ *  - Initiates payment based on selected method
+ *    - Cash and UPI are simulated with delay
+ *    - Card payments integrate with Stripe for real payment flow
+ *  - Manages payment status, feedback messages, and redirection
+ *    - On success: navigates to Success screen, then Ratings screen
+ *
+ * Technologies Used:
+ *  - React (hooks, routing)
+ *  - React Router (navigation, location state)
+ *  - Axios (API requests with JWT tokens)
+ *  - Stripe (client-side checkout session via loadStripe)
+ *
+ * Notes:
+ *  - Retrieves ride info from router state
+ *  - Sends authorization headers using tokens stored in localStorage
+ *  - Uses environment variables for backend API base URL
+ */
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";

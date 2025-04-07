@@ -1,3 +1,31 @@
+/**
+ * CaptainRiding.jsx
+ * 
+ * Description:
+ * This component represents the active ride interface for the Captain (driver).
+ * It:
+ *  - Displays Uber branding and logout link
+ *  - Animates a slide-up panel for ride completion using GSAP
+ *  - Shows ride data passed via router state
+ *  - Optionally includes LiveTracking (currently commented)
+ * 
+ * Features:
+ *  - GSAP-based animation for the Finish Ride panel
+ *  - Controlled via `finishRidePanel` state
+ *  - Shows gif/image placeholder during the ride (replaceable with live map)
+ *  - Calls `<FinishRide />` component with ride data
+ * 
+ * Libraries Used:
+ *  - React Router (Link, useLocation)
+ *  - GSAP + @gsap/react for animations
+ * 
+ * Props:
+ *  - None
+ * 
+ * Usage:
+ *  Rendered after a captain starts a ride. Triggered from captain home/dashboard.
+ */
+
 import React, { useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import FinishRide from '../components/FinishRide'
@@ -15,7 +43,7 @@ const CaptainRiding = () => {
     console.log(rideData)
 
 
-
+    // Animate the finish ride panel in/out based on toggle state
     useGSAP(function () {
         if (finishRidePanel) {
             gsap.to(finishRidePanelRef.current, {

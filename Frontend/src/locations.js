@@ -1,3 +1,5 @@
+// List of available cities/locations for the ride-hailing service
+// This array contains major cities across the United States where the service operates
 const locations = [
     "New York",
     "Los Angeles",
@@ -200,4 +202,5 @@ const locations = [
     "Coral Springs"
 ];
 
+// Export the locations array for use in other components
 export default locations;
