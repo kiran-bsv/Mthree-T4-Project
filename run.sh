@@ -34,6 +34,13 @@ build_and_load m3t4-frontend Frontend
 
 # Step 5: Deploy Kubernetes manifests
 echo "🔐 Applying secrets and deploying all services..."
+
+kubectl create configmap grafana-dashboard-custom \
+  --from-file=Monitorings/custom-dashboard.json \
+  -n uber \
+  --dry-run=client -o yaml > k8s/configs/grafana-dashboard-custom.yaml
+
+
 kubectl apply -f k8s/promtail-daemonset.yaml --namespace=uber
 kubectl apply -f k8s/promtail-serviceaccount-rbac.yaml --namespace=uber
 kubectl apply -f k8s/secrets --namespace=uber
