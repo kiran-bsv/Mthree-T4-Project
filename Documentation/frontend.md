@@ -1,13 +1,8 @@
-Here’s your **frontend documentation** for the Cloud Monitoring Uber Project, formatted in clean `README.md` style for GitHub:
-
----
-
-```md
 # 🚘 Frontend - Cloud Monitoring Uber Project
 
 ## 🎯 Purpose
 
-The frontend of the Cloud Monitoring Uber Project serves as the **user interface layer**, enabling seamless interaction with the ride-booking system and real-time monitoring data. Core functionalities include:
+The frontend of the Uber Project serves as the **user interface layer**, enabling seamless interaction with the ride-booking system and real-time monitoring data. Core functionalities include:
 
 - Booking rides
 - Tracking ride status
@@ -128,7 +123,7 @@ It ensures a **transparent, responsive, and user-friendly experience**, bridging
 
 ## 📦 Future Suggestions
 
-You can consider adding the following for better modularity and scalability:
+
 
 | Folder        | Purpose                                                                 |
 |---------------|-------------------------------------------------------------------------|
@@ -141,6 +136,3 @@ You can consider adding the following for better modularity and scalability:
 | `layouts/`     | Layout components (`AuthLayout`, `DashboardLayout`)                    |
 
 ---
-
-Let me know if you'd like me to generate this as an actual `README.md` file for download or include visuals like a page hierarchy map!
-```

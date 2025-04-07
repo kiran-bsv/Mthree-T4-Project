@@ -23,6 +23,13 @@ spec:
             mountPath: /etc/loki
           - name: wal-storage
             mountPath: /wal               # 👈 Mount writable volume here
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
       volumes:
         - name: loki-config
           configMap:
