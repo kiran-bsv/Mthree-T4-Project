@@ -2,9 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_cors import CORS
 from app import db
 from models.payment_model import Payment
-
 from models.user_model import User
-
 from models.captainPaymentHistory_model import CaptainPaymentHistory
 from models.captain_model import CaptainEarnings, Captain
 from models.ride_model import Ride, RideInvoice, RideDiscount
@@ -12,30 +10,28 @@ from models.transaction_model import Transaction
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import uuid, random
 from datetime import datetime
-
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import stripe
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
-# Create a Blueprint for payments
 payments_bp = Blueprint('payments', __name__)
 
-# ✅ Apply CORS to the Blueprint level (to avoid duplicate headers)
+# Apply CORS to the Blueprint level (to avoid duplicate headers)
 CORS(payments_bp, resources={r"/create-checkout-session": {"origins": "http://localhost:5173"}})
 
-# ✅ Handle CORS preflight properly
+# Handle CORS preflight properly
 @payments_bp.route('/create-checkout-session', methods=['OPTIONS'])
 def handle_preflight():
-    return '', 204  # ✅ Return a proper preflight response
+    return '', 204  
 
-# ✅ Payment route with JWT authentication
+# handles the creation of a Stripe Checkout Session
+# It retrieves the user ID from the JWT token, validates the amount, and creates a session with Stripe.
 @payments_bp.route('/create-checkout-session', methods=['POST'])
-@jwt_required()  # 🔐 Require authentication
+@jwt_required()
 def create_checkout_session():
     try:
         # Get logged-in user identity from JWT
@@ -62,8 +58,6 @@ def create_checkout_session():
                 'quantity': 1,
             }],
             mode='payment',
-            # success_url="http://localhost:5173/payment/success",
-            # cancel_url="http://localhost:5173/payment/cancel",
         )
 
         return jsonify({"id": session.id}), 200  # Return the Stripe session ID
@@ -71,6 +65,9 @@ def create_checkout_session():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+
+# make_payment function handles the payment process
+# It checks if the payment already exists, applies a discount if available, and generates a transaction ID and invoice.
 @payments_bp.route('/pay', methods=['POST'])
 @jwt_required()
 def make_payment():
@@ -177,15 +174,6 @@ def make_payment():
             "status": new_payment.status,
             "payment_mode": new_payment.payment_mode
         },
-        # "invoice": {
-        #     "invoice_id": new_invoice.id,
-        #     "ride_id": new_invoice.ride_id,
-        #     "amount_paid": new_invoice.amount_paid,
-        #     "discount_applied": new_invoice.discount_applied,
-        #     "final_amount": new_invoice.final_amount,
-        #     "payment_mode": new_invoice.payment_mode,
-        #     "date": new_invoice.created_at.strftime("%Y-%m-%d %H:%M:%S")
-        # },
         "captain_payment": {
             "id": captain_payment.id,
             "ride_id": captain_payment.ride_id,
@@ -193,14 +181,7 @@ def make_payment():
         }
     }), 201
 
-# @payments_bp.route('/history', methods=['GET'])
-# @jwt_required()
-# def get_payments():
-#     user_id = get_jwt_identity()
-#     payments = Payment.query.filter_by(user_id=user_id).all()
-    
-#     return jsonify({"payments": [p.to_dict() for p in payments]}), 200
-
+# handles payment history retrieval by filtering payments based on captain ID and returning payment details
 @payments_bp.route('/captain-payment-history', methods=['GET'])
 @jwt_required()
 def get_captain_payments():

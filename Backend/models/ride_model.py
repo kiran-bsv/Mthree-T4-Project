@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
 
+# main ride table 
 class Ride(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -18,6 +19,7 @@ class Ride(db.Model):
     otp = db.Column(db.String(6), nullable=False)
     vehicleType = db.Column(db.String(50), nullable=False)
 
+# RideDiscount model to store ride discount information.This model is used to apply discounts to rides
 class RideDiscount(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.id'), nullable=False, unique=True)
@@ -27,6 +29,7 @@ class RideDiscount(db.Model):
 
     ride = db.relationship("Ride", backref=db.backref("discount", uselist=False))  # One-to-One Relationship
 
+# RideInvoice model to store ride invoice information. This model is used to generate invoices for rides
 class RideInvoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.id'), nullable=False, unique=True)

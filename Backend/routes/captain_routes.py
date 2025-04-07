@@ -3,8 +3,11 @@ from flask_jwt_extended import jwt_required
 from marshmallow import Schema, fields, ValidationError
 from controllers.captain_controller import register_captain, login_captain, get_captain_profile, logout_captain
 
+#captain_bp is a blueprint for the captain routes
+# It allows us to organize our routes and controllers better
 captain_bp = Blueprint('captain', __name__)
 
+# Captain registration schema using Marshmallow for validation.It defines the expected structure of the registration data
 class CaptainRegisterSchema(Schema):
     email = fields.Email(required=True, error_messages={"required": "Invalid Email"})
     fullname = fields.Dict(keys=fields.Str(), values=fields.Str(), required=True)

@@ -6,11 +6,13 @@ from middlewares.auth_middleware import auth_user
 
 user_bp = Blueprint('user', __name__)
 
+# User registration schema using Marshmallow for validation. It defines the expected structure of the registration data
 class RegisterUserSchema(Schema):
     email = fields.Email(required=True, error_messages={"required": "Invalid Email"})
     fullname = fields.Dict(keys=fields.Str(), values=fields.Str(), required=True)
     password = fields.Str(required=True, validate=lambda s: len(s) >= 6, error_messages={"required": "Password must be at least 6 characters long"})
 
+# Login schema using Marshmallow for validation. It defines the expected structure of the login data
 class LoginUserSchema(Schema):
     email = fields.Email(required=True, error_messages={"required": "Invalid Email"})
     password = fields.Str(required=True, validate=lambda s: len(s) >= 6, error_messages={"required": "Password must be at least 6 characters long"})

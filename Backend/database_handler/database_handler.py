@@ -8,6 +8,7 @@ load_dotenv()
 db = SQLAlchemy()
 
 def connect_to_db(app):
+    # Check if the environment variable is set
     db_uri = os.getenv("DB_CONNECT")
     if not db_uri:
         raise ValueError("Database connection string (DB_CONNECT) is missing in .env file")

@@ -7,23 +7,28 @@ from models.captainRideHistory_model import CaptainRideHistory
 from marshmallow import Schema, fields, ValidationError
 from services.ride_service import create_ride, get_fare, confirm_ride, start_ride, end_ride
 
+#createRideSchema to validate the request data for creating a ride
 class CreateRideSchema(Schema):
     pickup = fields.Str(required=True, validate=lambda s: len(s) >= 3, error_messages={"required": "Invalid pickup address"})
     destination = fields.Str(required=True, validate=lambda s: len(s) >= 3, error_messages={"required": "Invalid destination address"})
     vehicleType = fields.Str(required=True, validate=lambda s: s in ["auto", "car", "moto"], error_messages={"required": "Invalid vehicle type"})
 
+#fareQuerySchema to validate the request data for fare query
 class FareQuerySchema(Schema):
     pickup = fields.Str(required=True, validate=lambda s: len(s) >= 3, error_messages={"required": "Invalid pickup address"})
     destination = fields.Str(required=True, validate=lambda s: len(s) >= 3, error_messages={"required": "Invalid destination address"})
 
+#rideConfirmationSchema to validate the request data for ride confirmation
 class RideConfirmationSchema(Schema):
     rideId = fields.Int(required=True, error_messages={"required": "Invalid ride id"})
     captainId = fields.Int(required=True, error_messages={"required": "Captain ID is required"})
 
+#startRideSchema to validate the request data for starting a ride
 class StartRideSchema(Schema):
     rideId = fields.Int(required=True, error_messages={"required": "Invalid ride id"})
     otp = fields.Str(required=True, validate=lambda s: len(s) == 6, error_messages={"required": "Invalid OTP"})
 
+#endRideSchema to validate the request data for ending a ride
 class EndRideSchema(Schema):
     rideId = fields.Int(required=True, error_messages={"required": "Invalid ride id"})
 
@@ -33,6 +38,9 @@ ride_id_schema = RideConfirmationSchema()
 start_ride_schema = StartRideSchema()
 end_ride_schema = EndRideSchema()
 
+
+# handles ride creation by validating input, calculating fare, and saving ride data
+# jwt_required decorator ensures that the user is authenticated before confirming the ride
 @jwt_required()
 def create_ride_api():
     try:
@@ -44,6 +52,7 @@ def create_ride_api():
     except ValidationError as err:
         return jsonify(err.messages), 400
 
+# handles fare calculation by validating input and calling get_fare returning fare, duration, and distance
 @jwt_required()
 def get_fare_api():
     try:
@@ -54,6 +63,7 @@ def get_fare_api():
     except ValidationError as err:
         return jsonify(err.messages), 400
 
+# handles ride confirmation by validating input and calling confirm_ride to update ride status 
 def confirm_ride_api():
     try:
         data = RideConfirmationSchema().load(request.get_json())  
@@ -68,7 +78,7 @@ def confirm_ride_api():
     except ValidationError as err:
         return jsonify(err.messages), 400
 
-
+# handles ride start by validating input and calling start_ride to update ride status
 @jwt_required()
 def start_ride_api():
     try:
@@ -78,6 +88,7 @@ def start_ride_api():
     except ValidationError as err:
         return jsonify(err.messages), 400
 
+# handles ride end by validating input and calling end_ride to update ride status
 @jwt_required()
 def end_ride_api():
     try:
@@ -96,6 +107,7 @@ def end_ride_api():
     except ValueError as err:
         return jsonify({'error': str(err)}), 400
     
+# handles ride history retrieval by filtering rides based on user ID and returning ride details
 @jwt_required()
 def get_ride_history_api():
     user_id = get_jwt_identity()
@@ -115,6 +127,7 @@ def get_ride_history_api():
     
     return jsonify({"ride_history": history_data}), 200
 
+# handles favorite locations retrieval by filtering favorite locations based on user ID and returning top 3 locations
 @jwt_required()
 def get_favorite_locations():
     user_id = get_jwt_identity()
@@ -123,6 +136,7 @@ def get_favorite_locations():
     result = [{"pickup": f.pickup, "destination": f.destination, "count": f.count} for f in favorites]
     return jsonify({"favorite_locations": result}), 200
 
+# handles captain ride history retrieval by filtering rides based on captain ID and returning ride details
 @jwt_required()
 def get_captain_ride_history_api():
     captain_id = get_jwt_identity()

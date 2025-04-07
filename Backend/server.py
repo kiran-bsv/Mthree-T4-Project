@@ -9,11 +9,7 @@ from handlers.sql_logger import setup_sql_logging
 from socket_handler import socketio
 from config import config
 
-# app = Flask(__name__)
 app.config.from_object(config)
-
-# db = SQLAlchemy(app)
-# CORS(app)
 
 # Initialize Modules
 setup_logging(app)
@@ -25,5 +21,3 @@ setup_sql_logging(app, db)
 if __name__ == "server":
     with app.app_context():
         db.create_all()
-    app.logger.info("Starting Flask SocketIO App")
-    # socketio.run(app, host="0.0.0.0", port=5000, debug=True)

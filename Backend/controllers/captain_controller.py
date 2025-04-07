@@ -3,12 +3,16 @@ from models.captain_model import Captain, db, CaptainProfile, CaptainActivity
 from models.vehicle_model import Vehicle
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from datetime import datetime
 
+# Handles captain registration by validating input, hashing password, and saving captain, vehicle, profile, and activity data
 def register_captain():
     data = request.json
+    # Validate required fields
     if not data.get('email') or not data.get('password'):
         return jsonify({'error': 'Email and password required'}), 400
 
+    # Prevent duplicate registration with the same email
     if Captain.query.filter_by(email=data['email']).first():
         return jsonify({'error': 'Captain already exists'}), 400
 
@@ -17,12 +21,14 @@ def register_captain():
         firstname=data['fullname']['firstname'],
         lastname=data['fullname'].get('lastname', ''),
         email=data['email'],
+        # Hash the password before storing in the database
         password_hash=generate_password_hash(data['password']),
         vehicle_color=data['vehicle']['color'],
         vehicle_plate=data['vehicle']['plate'],
         vehicle_capacity=data['vehicle']['capacity'],
         vehicleType=data['vehicle']['vehicleType']
     )
+    # Commit new captain to DB to generate ID for related records
     db.session.add(new_captain)
     db.session.commit()  # Ensure ID is generated before adding related records
 
@@ -47,6 +53,7 @@ def register_captain():
     token = create_access_token(identity=str(new_captain.id))
     return jsonify({'token': token, 'captain': new_captain.id}), 201
 
+# Handles captain login by verifying credentials and returning a JWT token with profile info
 def login_captain():
     data = request.json
     captain = Captain.query.filter_by(email=data['email']).first()
@@ -80,6 +87,7 @@ def login_captain():
     # print("Login Successful:", captain_data)
     return jsonify({'token': token, 'captain':captain_data}), 200
 
+# Returns authenticated captain’s profile details using the JWT token
 @jwt_required()
 def get_captain_profile():
     captain_id = get_jwt_identity()
@@ -103,6 +111,7 @@ def get_captain_profile():
         }
     }), 200
 
+# Logs out the captain (can be extended to blacklist the token if needed)
 @jwt_required()
 def logout_captain():
     return jsonify({'message': 'Logged out successfully'}), 200
