@@ -10,12 +10,14 @@ pipeline {
         stage('🔨 Build & Deploy') {
             steps {
                 echo '🏗 Running run.sh to build & deploy...'
+                sh 'chmod +x run.sh'
                 sh './run.sh'
             }
         }
         stage('Port Forwarding') {
             steps {
                 echo '🏗 Running host.sh to port forward...'
+                sh 'chmod +x host.sh'
                 sh './host.sh'
             }
         }
