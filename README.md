@@ -25,7 +25,8 @@ Runs on `http://localhost:5173/`
 
 ### 📁 Indirects
 
-- [Component Structure Diagram](indirects/frontend/component-diagram.md)
+- [Overview](/Frontend)
+- [Component Structure Diagram](/Frontend/)
 - [State Flow Chart](indirects/frontend/state-flow.md)
 
 ---
