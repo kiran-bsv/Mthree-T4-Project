@@ -1,3 +1,22 @@
+/**
+ * File: locations.js
+ * Purpose: This file serves as a centralized data source for available locations in the ride-hailing application.
+ * 
+ * Features:
+ * - Contains a comprehensive list of major US cities where the service operates
+ * - Used for location suggestions and validation in the ride booking process
+ * - Provides autocomplete functionality for pickup and destination inputs
+ * - Ensures consistent location data across the application
+ * - Helps validate user input against available service areas
+ * 
+ * Usage:
+ * - Imported by components that need location data
+ * - Used in location search and validation logic
+ * - Supports the ride booking flow by providing valid location options
+ */
+
+// List of available cities/locations for the ride-hailing service
+// This array contains major cities across the United States where the service operates
 const locations = [
     "New York",
     "Los Angeles",
@@ -200,4 +219,5 @@ const locations = [
     "Coral Springs"
 ];
 
+// Export the locations array for use in other components
 export default locations;

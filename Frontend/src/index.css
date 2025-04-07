@@ -1,3 +1,24 @@
+/**
+ * File: index.css
+ * Purpose: This file imports and configures Tailwind CSS for the application.
+ * 
+ * Features:
+ * - Imports Tailwind's base styles
+ * - Imports Tailwind's component styles
+ * - Imports Tailwind's utility classes
+ * - Sets up the foundation for Tailwind CSS usage
+ * 
+ * Usage:
+ * - Provides the base styling framework for the application
+ * - Enables Tailwind CSS utility classes throughout the app
+ * - Sets up consistent styling patterns
+ */
+
+/* Import Tailwind CSS base styles */
 @tailwind base;
+
+/* Import Tailwind CSS component styles */
 @tailwind components;
+
+/* Import Tailwind CSS utility classes */
 @tailwind utilities;

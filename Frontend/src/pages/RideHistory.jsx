@@ -1,17 +1,40 @@
+/**
+ * File: RideHistory.jsx
+ * Purpose: This file displays the user's ride history and past trips.
+ * 
+ * Features:
+ * - Shows past ride details
+ * - Displays ride statistics
+ * - Provides ride history filtering
+ * - Shows ride status and details
+ * - Implements pagination
+ * - Handles ride history data
+ * 
+ * Usage:
+ * - Displays user's ride history
+ * - Shows past trip details
+ * - Allows filtering of ride history
+ * - Provides ride statistics
+ * - Manages ride history data
+ */
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const RideHistory = () => {
+  // State management for ride history and favorites
   const [rideHistory, setRideHistory] = useState([]);
   const [favoriteLocations, setFavoriteLocations] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false); // Control visibility of favorites
+  const [showFavorites, setShowFavorites] = useState(false);
   const navigate = useNavigate();
 
+  // Fetch ride history on component mount
   useEffect(() => {
     const fetchRideHistory = async () => {
       try {
         const token = localStorage.getItem("userToken");
+        // Fetch ride history from backend
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/rides/ride-history`,
           {
@@ -28,14 +51,15 @@ const RideHistory = () => {
     };
 
     fetchRideHistory();
-    // console.log('this si the ride history ' , rideHistory)
   }, []);
 
+  // Handle fetching and toggling favorite locations
   const handleFavoritesClick = async () => {
-    setShowFavorites(!showFavorites); // Toggle visibility of the favorites section
+    setShowFavorites(!showFavorites);
     if (!showFavorites) {
       try {
         const token = localStorage.getItem("userToken");
+        // Fetch favorite locations from backend
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/rides/favoriteRoute`,
           {
@@ -45,7 +69,7 @@ const RideHistory = () => {
             },
           }
         );
-        setFavoriteLocations(response.data.favorite_locations); // Assuming the response returns favorite locations data
+        setFavoriteLocations(response.data.favorite_locations);
       } catch (error) {
         console.log("Error fetching favorite locations:", error);
       }
@@ -58,7 +82,7 @@ const RideHistory = () => {
         Your Ride History
       </h2>
 
-      {/* Button to toggle favorite locations visibility */}
+      {/* Toggle button for favorite locations */}
       <button
         className="bg-black mb-4 px-6 py-2 text-white hover:bg-black-600 rounded-lg"
         onClick={handleFavoritesClick}
@@ -69,8 +93,6 @@ const RideHistory = () => {
       {/* Ride History Table */}
       <div className="overflow-x-auto shadow-lg border-b border-gray-200 rounded-lg">
         <div className="max-h-[328px] overflow-y-auto">
-          {" "}
-          {/* Set the max height and enable scrolling */}
           <table className="min-w-full bg-white">
             <thead>
               <tr className="w-full bg-grey text-black text-sm">
@@ -79,27 +101,22 @@ const RideHistory = () => {
                 <th className="py-3 px-6 text-left">Fare</th>
                 <th className="py-3 px-6 text-left">Status</th>
                 <th className="py-3 px-6 text-left">Date</th>
-                {/* <th className="py-3 px-6 text-left">Date</th> */}
               </tr>
             </thead>
             <tbody>
+              {/* Display ride history rows */}
               {rideHistory.length > 0 ? (
-                rideHistory.map(
-                  (
-                    ride, index // Limit rows to 7
-                  ) => (
-                    <tr key={ride.id || index} className="border-b hover:bg-gray-100">
-                      {/* {{rideHistory}} */}
-                      <td className="py-4 px-6">{ride.pickup}</td>
-                      <td className="py-4 px-6">{ride.destination}</td>
-                      <td className="py-4 px-6">{ride.fare}</td>
-                      <td className="py-4 px-6">{ride.status}</td>
-                      <td className="py-4 px-6">
-                        {new Date(ride.timestamp).toLocaleString()}
-                      </td>
-                    </tr>
-                  )
-                )
+                rideHistory.map((ride, index) => (
+                  <tr key={ride.id || index} className="border-b hover:bg-gray-100">
+                    <td className="py-4 px-6">{ride.pickup}</td>
+                    <td className="py-4 px-6">{ride.destination}</td>
+                    <td className="py-4 px-6">{ride.fare}</td>
+                    <td className="py-4 px-6">{ride.status}</td>
+                    <td className="py-4 px-6">
+                      {new Date(ride.timestamp).toLocaleString()}
+                    </td>
+                  </tr>
+                ))
               ) : (
                 <tr>
                   <td
@@ -122,6 +139,7 @@ const RideHistory = () => {
             Favorite Locations
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Display favorite locations */}
             {favoriteLocations.map((favorite, index) => (
               <div
                 key={favorite.id || index}
