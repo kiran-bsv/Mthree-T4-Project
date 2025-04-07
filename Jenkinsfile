@@ -10,8 +10,8 @@ pipeline {
         stage('🔨 Build & Deploy') {
             steps {
                 echo '🏗 Running run.sh to build & deploy...'
-                sh 'chmod +x run.sh'
-                sh './run.sh'
+                sh 'chmod +x run-jenkins.sh'
+                sh './run-jenkins.sh'
             }
         }
         stage('Port Forwarding') {
