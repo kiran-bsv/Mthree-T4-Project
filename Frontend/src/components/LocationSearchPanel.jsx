@@ -1,15 +1,30 @@
+/*
+  LocationSearchPanel Component
+
+  - Displays a list of location suggestions to the user during ride booking.
+  - When a suggestion is clicked:
+    • If the active field is "pickup", it sets the selected pickup location.
+    • If the active field is "destination", it sets the selected destination.
+  - Props received:
+    • suggestions: array of suggested locations (strings).
+    • setPickup & setDestination: functions to set the chosen locations.
+    • activeField: indicates whether user is setting pickup or destination.
+    • setVehiclePanel & setPanelOpen: likely for navigation but not used here.
+  - Renders each suggestion in a styled clickable div.
+*/
+
 import React from 'react'
 
 const LocationSearchPanel = ({ suggestions, setVehiclePanel, setPanelOpen, setPickup, setDestination, activeField }) => {
 
+    // Handle the selection of a suggestion
     const handleSuggestionClick = (suggestion) => {
         if (activeField === 'pickup') {
             setPickup(suggestion)
         } else if (activeField === 'destination') {
             setDestination(suggestion)
         }
-        // setVehiclePanel(true)
-        // setPanelOpen(false)
+        
     }
 
     return (

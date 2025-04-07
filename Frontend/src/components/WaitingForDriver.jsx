@@ -1,7 +1,12 @@
+// WaitingForDriver Component
+// This component displays the ride confirmation screen while waiting for the driver.
+// It shows driver's name, vehicle details, OTP, pickup & drop locations, distance, duration, and fare.
+// Users can close the panel using the arrow button at the top.
+
 import React from 'react'
 
 const WaitingForDriver = (props) => {
-  // console.log("props: line 4", props)
+ 
   return (
     <div>
       <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
@@ -9,6 +14,7 @@ const WaitingForDriver = (props) => {
       }}><i className="text-3xl text-gray-500 hover:text-gray-700  ri-arrow-down-wide-line"></i>
       </h5>
 
+       {/* Driver and Vehicle Info Section */}
       <div className='flex items-center justify-between'>
         <img className='h-12' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="" />
         <div className='text-right'>
@@ -30,10 +36,11 @@ const WaitingForDriver = (props) => {
             
           </div>
           
-          {/* <h1 className='text-semi-bold font-medium'>OTP:&nbsp;  {props.ride?.otp} </h1> */}
+          
         </div>
       </div>
 
+         {/* Ride Summary Info Section */}
       <div className='flex gap-2 justify-between flex-col items-center'>
         <div className='w-full mt-5'>
           <div className='flex items-center gap-5 p-3 border-b-2'>
@@ -45,6 +52,7 @@ const WaitingForDriver = (props) => {
           </div>
           <div className='flex items-center gap-5 p-3 border-b-2'>
             <i className="text-lg ri-map-pin-2-fill"></i>
+              {/* Distance and Duration */}
             <div>
               <h3 className='text-lg font-medium'>{props.ride?.destination}</h3>
               <p className='text-sm -mt-1 text-gray-600'>{props.ride?.destination}</p>
@@ -53,7 +61,7 @@ const WaitingForDriver = (props) => {
           <div className='flex items-center gap-5 p-3'>
             <i className="ri-time-line"></i>
             <div>
-                {/* <h3 className='text-lg font-medium'>{props.ride?.distance}kms &nbsp;&nbsp;{props.ride?.duration}hrs</h3> */}
+               
                 <h3 className='text-lg font-medium'>
                                 {props.ride?.distance}kms&nbsp;&nbsp;
                                 {(() => {
@@ -69,6 +77,7 @@ const WaitingForDriver = (props) => {
         </div>
           <div className='flex items-center gap-5 p-3'>
             <i className="ri-currency-line"></i>
+              {/* Fare Info */}
             <div>
               <h3 className='text-lg font-medium'>₹{props.ride?.fare} </h3>
               <p className='text-sm -mt-1 text-gray-600'>Cash</p>
