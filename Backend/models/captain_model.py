@@ -29,6 +29,7 @@ class Captain(db.Model):
     def generate_auth_token(self):
         return create_access_token(identity=str(self.id))
     
+# CaptainProfile model to store captain's profile information    
 class CaptainProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     captain_id = db.Column(db.Integer, db.ForeignKey('captain.id'), nullable=False, unique=True)
@@ -40,6 +41,7 @@ class CaptainProfile(db.Model):
 
     captain = db.relationship('Captain', backref=db.backref('profile', uselist=False))
 
+# CaptainActivity model to store captain's activity information
 class CaptainActivity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     captain_id = db.Column(db.Integer, db.ForeignKey('captain.id'), nullable=False, unique=True)
@@ -49,7 +51,7 @@ class CaptainActivity(db.Model):
 
     captain = db.relationship('Captain', backref=db.backref('activity', uselist=False))
 
-
+# CaptainRideHistory model to store captain's ride history information
 class CaptainEarnings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     captain_id = db.Column(db.Integer, db.ForeignKey('captain.id'), unique=True, nullable=False)
@@ -58,6 +60,7 @@ class CaptainEarnings(db.Model):
 
     captain = db.relationship("Captain", backref=db.backref("earnings", uselist=False))
 
+# CaptainRatings model to store captain's average ratings information
 class CaptainRatings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     captain_id = db.Column(db.Integer, db.ForeignKey('captain.id'), unique=True, nullable=False)

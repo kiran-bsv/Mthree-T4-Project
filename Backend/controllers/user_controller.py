@@ -6,6 +6,7 @@ from datetime import datetime
 from werkzeug.security import check_password_hash
 from marshmallow import ValidationError
 
+# Handles user registration by validating input, calling create_user, and returning a JWT token and user ID
 def register_user():
     try:
         data = request.json
@@ -24,6 +25,7 @@ def register_user():
     except ValidationError as err:
         return jsonify(err.messages), 400
 
+# Handles user login by verifying credentials and returning a JWT token and updating last login time in UserActivity
 def login_user():
     data = request.json
     user = User.query.filter_by(email=data['email']).first()
@@ -41,6 +43,7 @@ def login_user():
     
     return jsonify({'token': token}), 200
 
+# Handles user profile retrieval by checking JWT identity and returning user details
 @jwt_required()
 def get_user_profile():
     user_id = get_jwt_identity()

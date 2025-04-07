@@ -20,6 +20,7 @@ class User(db.Model):
     def generate_auth_token(self):
         return create_access_token(identity=str(self.id), expires_delta=False)
 
+# UserProfile model to store user's profile information
 class UserProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
@@ -29,6 +30,8 @@ class UserProfile(db.Model):
     bio = db.Column(db.Text, nullable=True)
     profile_picture = db.Column(db.String(255), nullable=True)
 
+# UserActivity model to store user's activity information. last_login, last_seen, ip_address
+# This model is used to keep track of the user's activity on the platform.
 class UserActivity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)

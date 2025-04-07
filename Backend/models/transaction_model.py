@@ -2,6 +2,8 @@ from app import db
 from datetime import datetime
 import uuid
 
+# Transaction model to store payment transactions
+# This model is used to keep track of all transactions related to payments made by users.
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     payment_id = db.Column(db.Integer, db.ForeignKey('payment.id'), nullable=False)

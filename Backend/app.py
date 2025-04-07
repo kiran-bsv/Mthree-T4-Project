@@ -24,10 +24,10 @@ app = Flask(__name__)
 
 Frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
-# ✅ Ensure `Frontend_url` is always a string
+#  Ensure `Frontend_url` is always a string
 allowed_origins = [Frontend_url, "http://localhost:5173", "http://127.0.0.1:5173", "http://0.0.0.0:5173"]
 
-# ✅ Properly configured CORS
+# Properly configured CORS
 CORS(app, resources={r"/*": {"origins": allowed_origins}}, supports_credentials=True)
 # CORS(app)
 
@@ -60,7 +60,7 @@ app.register_blueprint(payments_bp, url_prefix='/payments')
 def home():
     return jsonify({'message': 'Hello, Flask!'})
 
-# ✅ Payment Checkout Session Route (No extra CORS here)
+# Payment Checkout Session Route (No extra CORS here)
 @app.route('/payment/create-checkout-session', methods=['POST'])
 @jwt_required()
 def create_checkout_session():
