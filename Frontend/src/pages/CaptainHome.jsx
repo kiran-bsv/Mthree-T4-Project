@@ -1,3 +1,21 @@
+/*
+ * CaptainHome.jsx
+ * 
+ * This component serves as the main dashboard for the Captain (driver) in the Uber-like monitoring app.
+ * It enables real-time interaction with the backend via WebSockets and displays ride request details.
+ * 
+ * Core functionalities:
+ * - Joins a WebSocket room upon login using the captain's ID
+ * - Sends periodic location updates to the server (if location permissions are granted)
+ * - Listens for new ride requests and ride confirmation events via WebSocket
+ * - Shows ride popups when a new ride is available, allowing the captain to accept it
+ * - Shows confirmation popup after ride is accepted
+ * - Uses GSAP animations to smoothly slide in/out ride panels
+ * - Provides quick navigation to ride history and payment history
+ * - Displays captain details and a background image
+ */ 
+
+
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import CaptainDetails from "../components/CaptainDetails";
@@ -12,56 +30,19 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const CaptainHome = () => {
+  // State for managing the ride popup and confirmation popup visibility
   const [ridePopupPanel, setRidePopupPanel] = useState(false);
   const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
 
+  // References for GSAP animation panels
   const ridePopupPanelRef = useRef(null);
   const confirmRidePopupPanelRef = useRef(null);
   const [ride, setRide] = useState(null);
 
+  // Ride state
   const { socket } = useContext(SocketContext);
   const { captain } = useContext(CaptainDataContext);
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //     if (!captain || !captain.id) {
-  //         return;
-  //     }
-
-  //     socket.emit("join", {
-  //         userId: captain.id,
-  //         userType: "captain"
-  //     });
-
-  //     const updateLocation = () => {
-  //         if (navigator.geolocation) {
-  //             navigator.geolocation.getCurrentPosition(position => {
-
-  //                 socket.emit('update-location-captain', {
-  //                     userId: captain.id,
-  //                     location: {
-  //                         ltd: position.coords.latitude,
-  //                         lng: position.coords.longitude
-  //                     }
-  //                 });
-  //             });
-  //         }
-  //     };
-
-  //     const locationInterval = setInterval(updateLocation, 10000);
-  //     updateLocation();
-
-  //     return () => clearInterval(locationInterval);  // Cleanup interval on unmount
-  // }, [captain]);
-
-  // socket.on('new-ride', (data) => {
-  //     console.log("Ride Data set:", data);
-  //     setRide(data)
-  //     setRidePopupPanel(true);
-  //     console.log("Ride popup set to true");
-  //     // setRidePopupPanel(true)
-
-  // })
 
   useEffect(() => {
     if (!captain || !captain.id) {
@@ -73,6 +54,7 @@ const CaptainHome = () => {
       userType: "captain",
     });
 
+    // Send captain's current location
     const updateLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
@@ -87,29 +69,14 @@ const CaptainHome = () => {
       }
     };
 
-    // const locationInterval = setInterval(updateLocation, 10000);
-    // updateLocation();
-
+    // Handle incoming ride request
     const handleNewRide = (data) => {
       console.log("Ride Data set:", data);
-      // if(ride.status === "confirmed" || ride.status) {
       if (localStorage.getItem("captainStatus") !== "open") return;
       localStorage.setItem("captainStatus", data.user.id);
       setRide(data);
       setRidePopupPanel(true);
       setConfirmRidePopupPanel(false);
-      // const timer = setTimeout(() => {
-      //     setRidePopupPanel((prev) => {
-      //         if (prev && !confirmRidePopupPanel) {
-      //             console.log('close popup from captain home -1');
-      //             return false;
-      //         }
-      //         return prev;
-      //     });
-      //     console.log('close popup from captain home -2');
-      // }, 6000);
-
-      // return () => clearTimeout(timer);
       console.log("Ride popup set to true");
     };
 
@@ -134,23 +101,9 @@ const CaptainHome = () => {
       socket.off("ride-confirmed", handleRideConfirmed);
       socket.off("new-ride", handleNewRide); // Cleanup interval on unmount
     };
-    // return () => {
-    //     clearInterval(locationInterval);  // Cleanup interval
-    //     socket.off('new-ride', handleNewRide);  // Cleanup socket event
-    // };
   }, [captain]);
 
   async function confirmRide() {
-    // const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
-
-    //     rideId: ride.id,
-    //     captainId: captain.id,
-
-    // }, {
-    //     headers: {
-    //         Authorization: `Bearer ${localStorage.getItem('captainToken')}`
-    //     }
-    // })
 
     setRidePopupPanel(false);
     setConfirmRidePopupPanel(true);
@@ -174,7 +127,6 @@ const CaptainHome = () => {
           },
         }
       );
-      // console.log("ride.Id in captainHome.jsx 152:", ride.id);
       setRidePopupPanel(false);
       setConfirmRidePopupPanel(true);
     } catch (error) {
@@ -214,8 +166,6 @@ const CaptainHome = () => {
 
   return (
     <div className="h-screen">
-      {/* <div className="fixed p-6 top-0 flex items-center justify-between w-screen"> */}
-        {/* <img className='w-16' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" /> */}
         <nav className="bg-white text-black flex justify-between items-center p-4 z-50 relative ">
           <img
             className="w-16"
@@ -241,13 +191,6 @@ const CaptainHome = () => {
             </div>
           </div>
         </nav>
-        {/* <Link
-          to="/captain-home"
-          className=" h-10 w-10 bg-white flex items-center justify-center rounded-full"
-        >
-          <i className="text-lg font-medium ri-logout-box-r-line"></i>
-        </Link> */}
-      {/* </div> */}
       <div className="h-2/4 justify-center display: flex" >
         <img
           className="h-full w-full object-cover"

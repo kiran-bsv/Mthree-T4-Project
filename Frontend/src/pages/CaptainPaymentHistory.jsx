@@ -1,3 +1,17 @@
+/**
+ * CaptainPaymentHistory.jsx
+ *
+ * Description:
+ * This component displays the captain's payment history.
+ * It:
+ *  - Fetches payment records from the backend API using the captain's token
+ *  - Calculates and displays total earnings
+ *  - Shows a grid of past ride payments including pickup, destination, amount earned, and date
+ *
+ * The component uses Axios for API calls, Tailwind CSS for styling, and React hooks (useState, useEffect).
+ */
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +22,7 @@ const CaptainPaymentHistory = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Function to fetch payment history for the captain
     const fetchPayments = async () => {
       try {
         const token = localStorage.getItem("captainToken");
@@ -21,6 +36,7 @@ const CaptainPaymentHistory = () => {
           }
         );
         setPayments(response.data.captain_payments);
+        // Calculate total earnings from all payments
         setTotalEarnings(
           response.data.captain_payments.reduce((sum, p) => sum + p.amount_earned, 0)
         );

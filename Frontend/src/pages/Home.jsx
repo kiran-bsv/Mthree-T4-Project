@@ -1,3 +1,23 @@
+/**
+ * Home.jsx
+ * ------------
+ * Main homepage for the user in the ride-hailing application.
+ * Handles user interactions for:
+ *  - Selecting pickup and destination locations
+ *  - Viewing vehicle options and fare estimation
+ *  - Confirming a ride
+ *  - Receiving live updates via WebSocket events
+ *  - Panel animations using GSAP
+ *  - Displaying promotional sliders
+ *
+ * Technologies used:
+ *  - React (functional components, hooks)
+ *  - GSAP (animations)
+ *  - Socket.IO (real-time communication)
+ *  - Axios (API requests)
+ *  - Context API (user and socket contexts)
+ */
+
 import React, { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -19,6 +39,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const Home = () => {
+  // State management for locations, panels, ride data, etc.
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
   const [panelOpen, setPanelOpen] = useState(false);
@@ -45,8 +66,9 @@ const Home = () => {
 
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserDataContext);
-  // console.log("user:",user);
 
+
+  // Socket join on user presence
   useEffect(() => {
     if (!user || !user.id) {
       return;
@@ -58,7 +80,6 @@ const Home = () => {
   useEffect(() => {
     const handleRideConfirmed = (ride) => {
       console.log("user : line 56", user);
-      // console.log("Ride confirmed: line 57", ride);
       if (ride.userId != user.id) {
         return;
       }
@@ -86,36 +107,25 @@ const Home = () => {
     };
   }, [socket]);
 
+  // Show ride history log (placeholder)
   const handleClick = () => {
     console.log("Ride history clicked");
-    // navigate("/ride-history");
   };
 
+  // Handle pickup input and filter suggestions
   const handlePickupChange = async (e) => {
     setPickup(e.target.value);
     try {
-      // const response = await axios.get(
-      //   `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
-      //   {
-      //     params: { input: e.target.value },
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-      //     },
-      //   }
-      // );
-      // setPickupSuggestions(response.data.suggestions);
       const query = e.target.value.toLowerCase();
       setPickup(query);
 
       if (query.length === 0) {
-        // setSuggestions([]);
         return;
       }
 
       const filteredSuggestions = locations.filter((location) =>
         location.toLowerCase().startsWith(query)
       );
-      // .slice(0, 5); // Limit suggestions
 
       setPickupSuggestions(filteredSuggestions);
     } catch (error) {
@@ -123,31 +133,20 @@ const Home = () => {
     }
   };
 
+   // Handle destination input and filter suggestions
   const handleDestinationChange = async (e) => {
     setDestination(e.target.value);
     try {
-      // const response = await axios.get(
-      //   `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
-      //   {
-      //     params: { input: e.target.value },
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-      //     },
-      //   }
-      // );
-      // setDestinationSuggestions(response.data.suggestions);
       const query = e.target.value.toLowerCase();
       setDestination(query);
 
       if (query.length === 0) {
-        // setSuggestions([]);
         return;
       }
 
       const filteredSuggestions = locations.filter((location) =>
         location.toLowerCase().startsWith(query)
       );
-      // .slice(0, 5); // Limit suggestions
 
       setDestinationSuggestions(filteredSuggestions);
     } catch (error) {
@@ -157,7 +156,6 @@ const Home = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    // console.log(pickup,destination)
   };
 
   useGSAP(
@@ -166,7 +164,6 @@ const Home = () => {
         gsap.to(panelRef.current, {
           height: "70%",
           padding: 24,
-          // opacity:1
         });
         gsap.to(panelCloseRef.current, {
           opacity: 1,
@@ -175,7 +172,6 @@ const Home = () => {
         gsap.to(panelRef.current, {
           height: "0%",
           padding: 0,
-          // opacity:0
         });
         gsap.to(panelCloseRef.current, {
           opacity: 0,
@@ -261,15 +257,6 @@ const Home = () => {
     setVehiclePanel(true); // shows the pickup vehicle options
     setPanelOpen(false); // pickup & dest panel
 
-    // const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
-    //     params: { pickup, destination },
-    //     headers: {
-    //         Authorization: `Bearer ${localStorage.getItem('token')}`
-    //     }
-    // })
-
-    // setFare(response.data)
-
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
@@ -281,10 +268,7 @@ const Home = () => {
         }
       );
       console.log("Fare fetched successfully:", response.data);
-      // setFare(response.data.fare?.[0]);
       setFare(response.data.fare);
-      // console.log(response.data.fare.fare?.[1]);
-      // setDuration(response.data.fare?.[1]);
       setDuration(response.data.duration);
       setDistance(response.data.distance);
     } catch (error) {
@@ -294,15 +278,6 @@ const Home = () => {
   }
 
   async function createRide() {
-    // const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
-    //     pickup,
-    //     destination,
-    //     vehicleType
-    // }, {
-    //     headers: {
-    //         Authorization: `Bearer ${localStorage.getItem('token')}`
-    //     }
-    // })
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/rides/create`,
@@ -335,8 +310,6 @@ const Home = () => {
       slidesToShow: 1,
       slidesToScroll: 1,
       autoplay: true,
-      // autoplaySpeed: 2000,
-      // variableWidth: true
     };
   
     return (
@@ -370,17 +343,7 @@ const Home = () => {
 
   return (
     <div className="h-screen relative overflow-hidden ">
-      {/* <img
-        className="w-16 absolute left-5 top-5"
-        src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-        alt=""
-      /> */}
       <nav className="text-black flex justify-between items-center p-4 z-50 relative bg-black border-gray-200 dark:bg-black-900 ">
-        {/* <img
-          className="w-16"
-          src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-          alt="Uber Logo"
-        /> */}
         <img src="data:image/png;base64,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" class="h-8" alt="Flowbite Logo" />
             <span class="ml-[-28cm] text-2xl font-semibold whitespace-nowrap text-white">Uber</span>
         <div className="flex items-center gap-8 mr-3">
@@ -401,8 +364,6 @@ const Home = () => {
       </div>
 
       <div className="h-screen w-screen">
-        {/* image for temporary use  */}
-        {/* <LiveTracking /> */}
       </div>
       <div className=" flex flex-col justify-end h-screen absolute top-0 w-full">
         <div
@@ -417,7 +378,6 @@ const Home = () => {
             }}
             className="absolute opacity-0 right-6 top-6 text-2xl"
           >
-            {/* <i className="ri-arrow-down-wide-line"></i> */}
             <i class="ri-arrow-down-s-line"></i>
           </h5>
           <h4 className="text-2xl font-semibold ">Find a trip</h4>
@@ -428,7 +388,6 @@ const Home = () => {
               submitHandler(e);
             }}
           >
-            {/* location & dest. input boxex */}
             <div className="line absolute h-16 w-1 top-[50%] -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
             <input
               onClick={() => {
@@ -478,7 +437,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* choose pickup vehicle options */}
       <div
         ref={vehiclePanelRef}
         className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
