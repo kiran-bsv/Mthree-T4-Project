@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -e
 
 # Step 6: Wait for deployments to become ready
