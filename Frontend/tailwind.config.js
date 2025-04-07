@@ -1,21 +1,3 @@
-/**
- * File: tailwind.config.js
- * Purpose: This file configures Tailwind CSS for the application.
- * 
- * Features:
- * - Defines content paths for Tailwind processing
- * - Configures custom animations
- * - Sets up custom keyframes
- * - Manages theme extensions
- * - Configures plugin options
- * 
- * Usage:
- * - Customizes Tailwind CSS behavior
- * - Adds custom animations and styles
- * - Configures theme settings
- * - Manages build optimization
- */
-
 // /** @type {import('tailwindcss').Config} */
 // export default {
 //   content: [

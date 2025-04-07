@@ -1,21 +1,22 @@
 /**
  * File: UserSignup.jsx
- * Purpose: This file handles user registration and account creation.
+ * Purpose: This component handles user registration and account creation for the ride-hailing application.
  * 
  * Features:
- * - Implements user registration form
- * - Handles form validation
- * - Manages user data collection
- * - Provides error handling
- * - Implements password requirements
- * - Handles navigation after signup
+ * - Provides a registration form with required user details
+ * - Handles form submission and validation
+ * - Manages user registration state
+ * - Integrates with the backend API for user creation
+ * - Provides error handling and user feedback
+ * - Uses context for user state management
+ * - Implements secure password handling
  * 
  * Usage:
- * - Creates new user accounts
- * - Collects user registration data
- * - Validates user input
- * - Provides feedback on registration status
- * - Manages signup process
+ * - Allows new users to create accounts
+ * - Collects necessary user information
+ * - Manages authentication tokens
+ * - Redirects users to the home page after successful registration
+ * - Provides error messages for failed registration attempts
  */
 
 import React, { useState, useContext } from 'react'

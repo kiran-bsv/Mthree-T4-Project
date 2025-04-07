@@ -1,22 +1,3 @@
-/**
- * File: App.jsx
- * Purpose: This file serves as the main routing component for the ride-hailing application.
- * 
- * Features:
- * - Implements React Router for navigation
- * - Manages protected and public routes
- * - Handles user and captain authentication flows
- * - Integrates metrics tracking
- * - Provides route protection for authenticated users
- * - Manages ride-related pages and components
- * 
- * Usage:
- * - Serves as the entry point for application routing
- * - Controls access to protected routes
- * - Manages navigation between different sections of the app
- * - Handles authentication state and redirects
- */
-
 // Import necessary dependencies
 import React, { useContext } from 'react'
 import { Route, Routes } from 'react-router-dom'

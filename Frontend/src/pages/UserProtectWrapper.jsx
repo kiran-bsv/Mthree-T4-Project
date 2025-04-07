@@ -1,68 +1,69 @@
 /**
  * File: UserProtectWrapper.jsx
- * Purpose: This file implements a wrapper component for protecting routes that require authentication.
+ * Purpose: This component provides route protection and authentication state management for protected routes.
  * 
  * Features:
- * - Provides route protection
- * - Handles authentication checks
- * - Manages redirects for unauthenticated users
- * - Wraps protected components
- * - Implements authentication state management
- * - Provides loading states
+ * - Verifies user authentication status
+ * - Manages loading states during authentication checks
+ * - Redirects unauthenticated users to the login page
+ * - Fetches and updates user profile data
+ * - Uses context for user state management
+ * - Handles token validation and cleanup
  * 
  * Usage:
- * - Wraps components that require authentication
- * - Protects routes from unauthorized access
- * - Manages authentication flow
- * - Handles redirects based on auth state
+ * - Wraps protected routes to ensure authentication
+ * - Manages user session state
+ * - Provides loading states during authentication checks
+ * - Handles unauthorized access attempts
  */
 
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from 'react'
+import { UserDataContext } from '../context/UserContext'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
-const UserProtectWrapper = ({ children }) => {
-  // State for authentication check
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+const UserProtectWrapper = ({
+    children
+}) => {
+    const token = localStorage.getItem('userToken')
+    const navigate = useNavigate()
+    const { user, setUser } = useContext(UserDataContext)
+    const [ isLoading, setIsLoading ] = useState(true)
 
-  // Check authentication status
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Get token from localStorage
-        const token = localStorage.getItem("userToken");
-        
+    useEffect(() => {
         if (!token) {
-          // No token found, redirect to login
-          navigate("/login");
-          return;
+            navigate('/login')
         }
 
-        // Token exists, set authenticated
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Authentication check failed:", error);
-        navigate("/login");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+        axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(response => {
+            if (response.status === 200) {
+                setUser(response.data)
+                // console.log(response.data)
+                setIsLoading(false)
+            }
+        })
+            .catch(err => {
+                console.log(err)
+                localStorage.removeItem('userToken')
+                navigate('/login')
+            })
+    }, [ token ])
 
-    checkAuth();
-  }, [navigate]);
+    if (isLoading) {
+        return (
+            <div>Loading...</div>
+        )
+    }
 
-  // Show loading state while checking authentication
-  if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
-      </div>
-    );
-  }
+        <>
+            {children}
+        </>
+    )
+}
 
-  // Show children if authenticated
-  return isAuthenticated ? children : null;
-};
-
-export default UserProtectWrapper;
+export default UserProtectWrapper

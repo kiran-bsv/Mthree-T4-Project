@@ -1,21 +1,3 @@
-/**
- * File: App.css
- * Purpose: This file contains global styles and animations for the ride-hailing application.
- * 
- * Features:
- * - Defines root container styles for consistent layout
- * - Implements logo animations and hover effects
- * - Provides responsive design utilities
- * - Contains card and documentation link styles
- * - Includes media queries for reduced motion preferences
- * 
- * Usage:
- * - Applied globally across the application
- * - Provides consistent styling for common components
- * - Handles responsive design requirements
- * - Manages animations and transitions
- */
-
 /* Root container styles for the application */
 #root {
   max-width: 1280px;
