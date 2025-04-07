@@ -1,3 +1,5 @@
+set -e
+
 # Step 6: Wait for deployments to become ready
 deployments=(flask-backend frontend prometheus grafana loki)
 for deployment in "${deployments[@]}"; do

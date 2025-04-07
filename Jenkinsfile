@@ -13,6 +13,12 @@ pipeline {
                 sh './run.sh'
             }
         }
+        stage('Port Forwarding') {
+            steps {
+                echo '🏗 Running host.sh to port forward...'
+                sh './host.sh'
+            }
+        }
     }
 
     post {
