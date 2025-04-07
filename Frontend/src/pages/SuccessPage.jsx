@@ -1,3 +1,20 @@
+/**
+ * File: SuccessPage.jsx
+ * Purpose: This component displays a success message after a successful payment and automatically redirects to the ratings page.
+ * 
+ * Features:
+ * - Shows a success message with payment confirmation
+ * - Automatically redirects to the ratings page after a delay
+ * - Passes ride information to the ratings page
+ * - Implements a clean-up function to prevent memory leaks
+ * - Uses React Router for navigation
+ * 
+ * Usage:
+ * - Displayed after successful payment processing
+ * - Provides visual feedback to users about their payment status
+ * - Transitions users to the ratings page for ride feedback
+ */
+
 import React from "react";
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";

@@ -12,15 +12,19 @@ spec:
     metadata:
       labels:
         app: flask-backend
+      annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "5000"
+          prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: flask-backend
-          image: backend-api:latest
+          image: m3t4-backend:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
           volumeMounts:
-            - name: log-volume
+            - name: log
               mountPath: /app/logs
           env:
             - name: PROMETHEUS_MULTIPROC_DIR
@@ -34,11 +38,21 @@ spec:
                   key: JWT_SECRET_KEY
             - name: STRIPE_SECRET_KEY
               value: "sk_test_51R8jsFCAERKUWFVyMTNRxoqV3Y75UdDG6qqzqQ1IOwpXV4Og23voirSMlJBRDF20SWgMJl0WJsW1eDiqAU003PiF00aPiMEDPB"
+            - name: LOGS_PATH
+              value: /app/logs
             - name: FRONTEND_URL
               valueFrom:
                 configMapKeyRef:
                   name: frontend-config
                   key: FRONTEND_URL
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
       volumes:
-        - name: log-volume
-          emptyDir: {}
+        - name: log
+          hostPath:
+            path: /app/logs

@@ -1,6 +1,7 @@
 from models.captain_model import Captain, db, CaptainProfile, CaptainActivity
 from werkzeug.security import generate_password_hash
 
+# Handles captain registration by validating input, hashing password, and saving captain, vehicle, profile, and activity data
 def create_captain(firstname, lastname, email, password, color, plate, capacity, vehicleType):
     if not all([firstname, email, password, color, plate, capacity, vehicleType]):
         raise ValueError("All fields are required")

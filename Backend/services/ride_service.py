@@ -8,20 +8,17 @@ from services.map_service import get_distance_time
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.exc import SQLAlchemyError
 
+# get_fare function calculates the fare based on distance and time and returns the fare, duration, and distance
 def get_fare(pickup, destination):
     """Calculate the fare based on distance and time."""
-    # distance, time, path = get_distance_time(pickup, destination)
     result = get_distance_time(pickup, destination)
     distance = float(result["distance"])
     time = float(result["duration"])
     path = result["path"]
 
-    # print(f"line 19 - distance: {distance}, duration: {time}, path: {path}")
     if not pickup or not destination:
         raise ValueError("Pickup and destination are required")
 
-    # fare = {"auto": distance*30, "car": distance*50, "moto": distance*15}
-    # duration= {"auto": time*20+0.1, "car": time*10+0.2, "moto": time*8}
     distance = float(distance)
     time = float(time)
 
@@ -34,6 +31,8 @@ def generate_otp(length=6):
     """Generate a numeric OTP of given length."""
     return str(random.randint(10**(length-1), (10**length)-1))
 
+# create_ride function creates a new ride request, calculates fare, and stores ride data in the database
+# It also checks if the pickup and destination locations exist in the database and adds them if not.
 def create_ride(pickup, destination, vehicleType):
     from socket_handler import socketio
     from models.user_model import User
@@ -52,9 +51,6 @@ def create_ride(pickup, destination, vehicleType):
     fare, duration, distance = get_fare(pickup, destination)
     if not fare or vehicleType not in fare:
         return {"error": "Invalid fare data"}, 500
-    # print(f"line 49 - fare: {fare} \n faretype: {type(fare[vehicleType])}")
-    
-    # print(f"line 38 \n fare: {fare} \n duration: {duration}")
 
     new_ride = Ride(
         user_id=user_id,
@@ -109,15 +105,14 @@ def create_ride(pickup, destination, vehicleType):
         "distance": new_ride.distance,
         "status": new_ride.status
     }
-    # socketio.emit("new-ride", ride_data, broadcast=True)
     socketio.emit("new-ride", ride_data, to=None)
     return new_ride
 
+# confirm_ride function confirms a ride by assigning a captain to the ride and updating the ride status in the database
 def confirm_ride(ride_id, captain_id):
     from socket_handler import socketio
-    # socketio.emit("user-rider", {ride_id,captain_id}, to=None)
-
     from models.captain_model import Captain
+
     """Confirm a ride by assigning a captain."""
     ride = Ride.query.get(ride_id)
     if ride.status != "pending":
@@ -135,8 +130,6 @@ def confirm_ride(ride_id, captain_id):
     ride.captain_id = captain_id
     db.session.commit()
 
-    # captain = Captain.query.get(captain_id)
-
     ride_data = {
         "userId": ride.user_id,
         "rideId": ride.id,
@@ -151,94 +144,10 @@ def confirm_ride(ride_id, captain_id):
         "distance": ride.distance,
         "vehicleType": ride.vehicleType
     }
-    
-    # socketio.emit("ride-confirmed", ride_data, broadcast=True)  # Emit event to all clients
     socketio.emit("ride-confirmed", ride_data, to=None)
     return ride_data
 
-
-'''
-def confirm_ride(ride_id, captain_id):
-    """Confirm a ride by assigning a captain with row-level locking."""
-    from socket_handler import socketio
-    # socketio.emit("user-rider", {ride_id,captain_id}, to=None)
-    from models.captain_model import Captain
-    try:
-        # Lock the ride row for update
-        ride = db.session.query(Ride).with_for_update().get(ride_id)
-        print(f'Trying 112 - {captain_id}')
-        
-        if ride.status != "pending":
-            return {"message": "Ride is already ongoing", "status": "PickedBySomeone", "rideId": ride.id}
-        
-        if not ride:
-            raise ValueError("Ride not found")
-        
-        # Update ride details
-        ride.status = "accepted"
-        ride.captain_id = captain_id
-        db.session.commit()
-        print(f"ride commit : 124 - {captain_id}")
-        
-        captain = Captain.query.get(captain_id)
-        
-        ride_data = {
-            "rideId": ride.id,
-            "status": "ongoing",
-            "captain": {"captain_id":captain.id,"firstname": captain.firstname, "lastname": captain.lastname,
-                        "vehicle_plate": captain.vehicle_plate},
-            "pickup": ride.pickup,
-            "destination": ride.destination,
-            "otp": ride.otp,
-            "fare": ride.fare
-        }
-        
-        # Emit event to notify clients
-        socketio.emit("ride-confirmed", ride_data, to=None)
-        return ride_data
-    
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return {"message": "An error occurred", "status": "Error", "error": str(e)}
-'''
-
-'''
-def start_ride(ride_id, otp, captain_id):
-    from socket_handler import socketio
-    from models.captain_model import Captain
-    """Start a ride if OTP matches."""
-    ride = Ride.query.get(ride_id)
-    if not ride:
-        raise ValueError("Ride not found")
-    
-    # if ride.status == "ongoing" or ride.status == "accepted":
-    #     return {"message": "Ride is already ongoing", "status":"PickedBySomeone","rideId": ride.id}
-    
-    if ride.status != "accepted":
-        raise ValueError("Ride not accepted")
-
-    if ride.otp != otp:
-        raise ValueError("Invalid OTP")
-
-    ride.status = "ongoing"
-    db.session.commit()
-
-    captain = Captain.query.get(captain_id)
-
-    ride_data = {
-        "rideId": ride.id,
-        "status": "ongoing",
-        "captain": {"firstname": captain.firstname, "lastname": captain.lastname},
-        "destination": ride.destination,
-        "fare": ride.fare
-    }
-    
-    # socketio.emit("ride-started", ride_data, broadcast=True)
-    socketio.emit("ride-started", ride_data, to=None)
-    return ride_data
-
-'''
-
+# start_ride function starts a ride if the OTP matches and updates the ride status in the database
 def start_ride(ride_id, otp, captain_id):
     from socket_handler import socketio
     from models.captain_model import Captain
@@ -269,15 +178,13 @@ def start_ride(ride_id, otp, captain_id):
         "vehicleType": ride.vehicleType,
         "userId": ride.user_id,
     }
-    
-    # socketio.emit("ride-started", ride_data, broadcast=True)
     socketio.emit("ride-started", ride_data, to=None)
     return ride_data
 
+# end_ride function ends a ride, updates the ride status in the database.
 def end_ride(ride_id, captain_id):
     from socket_handler import socketio
     """Complete a ride."""
-    # print(ride_id, captain_id)
     ride = Ride.query.filter_by(id=ride_id, captain_id=captain_id).first()
     if not ride:
         raise ValueError("Ride not found")
@@ -309,6 +216,7 @@ def end_ride(ride_id, captain_id):
     db.session.add(captain_ride_history_entry)
     db.session.commit()
 
+    # Check if the route is frequently used and update favorite locations
     favorite = FavoriteLocation.query.filter_by(
         user_id=ride.user_id, pickup=ride.pickup, destination=ride.destination
     ).first()
@@ -319,11 +227,9 @@ def end_ride(ride_id, captain_id):
         new_favorite = FavoriteLocation(user_id=ride.user_id, ride_id=ride.id, 
                                         pickup=ride.pickup, destination=ride.destination)
         db.session.add(new_favorite)
-
+        
     db.session.commit()
-
     ride_data = {"rideId": ride.id, "status": ride.status}
 
-    # socketio.emit("ride-ended", ride_data, broadcast=True)  # Ensure correct data format
     socketio.emit("ride-ended", ride_data, to=None)
     return ride

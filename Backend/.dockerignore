@@ -15,9 +15,21 @@ __pycache__/
 
 # Ignore log files
 *.log
-# logs/
-# */logs/
+logs/
+*/logs/
 
 # Ignore Qodo files
 .qodo
 */.qodo
+
+
+*/.env
+.env
+
+*/__pycache__/
+__pycache__/
+./*/__pycache__/
+
+*/.pytest_cache
+__pycache__/
+*.pyc

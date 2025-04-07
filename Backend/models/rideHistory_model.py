@@ -1,6 +1,8 @@
 from datetime import datetime
 from app import db
 
+#RideHistory model to store ride history for users
+# This model is used to keep track of all rides taken by a user, including their status and details.
 class RideHistory(db.Model):
     __tablename__ = 'ride_history'
 
@@ -15,5 +17,4 @@ class RideHistory(db.Model):
 
     # Relationships (if needed)
     user = db.relationship('User', backref='ride_histories')
-    # captain = db.relationship('Captain', backref='ride_histories')
     ride = db.relationship('Ride', backref='ride_histories')

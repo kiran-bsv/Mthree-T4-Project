@@ -9,7 +9,6 @@ class CaptainPaymentHistory(db.Model):
     pickup = db.Column(db.String(255), nullable=False)
     destination = db.Column(db.String(255), nullable=False)
     amount_earned = db.Column(db.Float, nullable=False)
-    # payment_status = db.Column(db.String(20), default="pending")  # pending, completed, failed
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships

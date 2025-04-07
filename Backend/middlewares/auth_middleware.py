@@ -3,6 +3,7 @@ from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from models.user_model import User
 from models.blacklistToken_model import BlacklistToken
 
+# Middleware to check if the user is authenticated
 def auth_user(func):
     def wrapper(*args, **kwargs):
         try:
