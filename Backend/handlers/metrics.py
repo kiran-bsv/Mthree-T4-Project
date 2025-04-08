@@ -80,7 +80,7 @@ def setup_metrics(app):
     def start_timer():
         request.start_time = time.time()
         update_system_metrics()  # Update system metrics at the start of each request
-        if random.random() < 0.3:
+        if random.random() < 0.001:
             raise Exception("Simulated error for testing purposes")
 
     @app.after_request
