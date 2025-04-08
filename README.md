@@ -100,9 +100,9 @@ chmod +x run.sh
 
 ### 📁 DevOps Indirects
 
-- 🧱 [Minikube Pod Structure](indirects/devops/minikube-pod-flow.md)
-- 🐳 [Dockerfile & Deployment Notes](indirects/devops/docker-notes.md)
-- 📊 [Grafana Dashboards Setup](indirects/devops/grafana-setup.md)
+- 🧱 [Dockerfile](Documentation/docker.md)
+- 🐳 [Deployment Notes](Documentation/k8s.md)
+- 📊 [Jenkins Setup](Documentation/jenkins.md)
 
 ---
 

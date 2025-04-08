@@ -46,9 +46,9 @@ export FRONTEND_URL="http://$MINIKUBE_IP:$FRONTEND_PORT"
 echo "FRONTEND_URL = $FRONTEND_URL"
 
 kubectl create configmap frontend-config \
-  --from-literal=FRONTEND_URL="$FRONTEND_URL" \
-  --from-literal=VITE_BASE_URL="http://localhost:5000" \
-  --from-literal=VITE_API_URL="http://localhost:5000" \
+  --from-literal=FRONTEND_URL="https://d19b-152-56-133-161.ngrok-free.app" \
+  --from-literal=VITE_BASE_URL="https://d6d-152-56-133-161.ngrok-free.app" \
+  --from-literal=VITE_API_URL="https://d6d-152-56-133-161.ngrok-free.app" \
   -n uber --dry-run=client -o yaml | kubectl apply -f -
 
 kubectl apply -f k8s/configs --namespace=uber   # Other configs

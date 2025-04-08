@@ -12,6 +12,8 @@ done
 echo "🛑 Killing existing port-forwards..."
 pkill -f "kubectl port-forward" || true
 
+kubectl port-forward -n $NAMESPACE svc/frontend-service 3001:80 &
+
 # Step 7: Port forwarding services in the background
 declare -A ports=(
     # [frontend-service]=5173:80
@@ -43,4 +45,5 @@ echo "📁 Logs (Loki)        → http://localhost:3100"
 echo "📈 Monitoring (Prometheus) → http://localhost:9090"
 echo "📊 Dashboard (Grafana) → http://localhost:3000"
 echo "🧠 Backend (Flask API) → http://localhost:5000"
-echo "🌍 Frontend        →  $FRONTEND_URL"
+# echo "🌍 Frontend        →  $FRONTEND_URL"
+echo "🧠 Frontend → http://localhost:3001"
