@@ -1,7 +1,7 @@
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
-LOG_EVERY_NTH_QUERY = 4  # Log every 10th query
+LOG_EVERY_NTH_QUERY = 3  # Log every 10th query
 query_counter = 0
 
 def setup_sql_logging(app, db):
