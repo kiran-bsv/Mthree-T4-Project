@@ -4,16 +4,18 @@ from database_handler.database_handler import db
 from models.user_model import User
 from models.captain_model import Captain
 from app import app 
+from handlers.metrics import ACTIVE_USERS  # or wherever your metric is defined
+
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 @socketio.on('connect')
 def handle_connect():
+    ACTIVE_USERS.inc()
     print(f"Client connected: {request.sid}")
 
 @socketio.on('join')
 def handle_join(data):
-
     user_id = data.get("userId")
     user_type = data.get("userType")
 
@@ -56,6 +58,7 @@ def update_location(data):
 
 @socketio.on('disconnect')
 def handle_disconnect():
+    ACTIVE_USERS.dec()
     print(f"Client disconnected: {request.sid}")
 
 def send_message_to_socket_id(socket_id, event, data):

@@ -3,6 +3,7 @@ from prometheus_client import Counter, Histogram, Gauge, Summary
 from flask import Flask, request
 import psutil
 import time
+import random
 
 # Define custom metrics
 REQUEST_LATENCY = Histogram('flask_request_latency_seconds', 'Request latency (seconds)', ['endpoint', 'method'])
@@ -19,12 +20,41 @@ NETWORK_RECEIVED = Gauge("flask_network_received", "Total network data received 
 
 FRONTEND_LOAD_TIME = Summary('frontend_load_time_seconds', 'Frontend page load time reported from React')
 
+# Store last cpu times and timestamp
+last_cpu_times = {}
+last_timestamps = {}
 
+def get_process_cpu_percent(process):
+    pid = process.pid
+    now = time.time()
+
+    # current CPU times
+    current_cpu = process.cpu_times().user + process.cpu_times().system
+
+    if pid in last_cpu_times:
+        delta_proc = current_cpu - last_cpu_times[pid]
+        delta_time = now - last_timestamps[pid]
+
+        if delta_time > 0:
+            cpu_percent = (delta_proc / delta_time) * 100 / psutil.cpu_count()
+        else:
+            cpu_percent = 0.0
+    else:
+        cpu_percent = 0.0
+
+    last_cpu_times[pid] = current_cpu
+    last_timestamps[pid] = now
+    return cpu_percent
 
 def update_system_metrics():
     """Update CPU, Memory, and Network metrics at the start of each request."""
-    CPU_USAGE.set(psutil.cpu_percent())
-    MEMORY_USAGE.set(psutil.virtual_memory().used / (1024 * 1024))
+    # CPU_USAGE.set(psutil.cpu_percent())
+    process = psutil.Process()
+    # CPU_USAGE.set(process.cpu_percent(interval=0.1)) # percore
+    CPU_USAGE.set(get_process_cpu_percent(psutil.Process()))
+    memory_mb = process.memory_info().rss / (1024 * 1024)  # RSS = Resident Set Size
+    MEMORY_USAGE.set(memory_mb)
+    # MEMORY_USAGE.set(psutil.virtual_memory().used / (1024 * 1024))
 
     net_io = psutil.net_io_counters()
     NETWORK_SENT.set(net_io.bytes_sent / (1024 * 1024))
@@ -50,6 +80,8 @@ def setup_metrics(app):
     def start_timer():
         request.start_time = time.time()
         update_system_metrics()  # Update system metrics at the start of each request
+        if random.random() < 0.3:
+            raise Exception("Simulated error for testing purposes")
 
     @app.after_request
     def track_request(response):
