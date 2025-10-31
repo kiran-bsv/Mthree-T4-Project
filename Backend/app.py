@@ -73,6 +73,7 @@ def create_checkout_session():
             return jsonify({"error": "Missing amount"}), 400
 
         amount_cents = int(float(amount) * 100)
+        # amount_cents = int(float(amount) * 1.16)
 
         ### Create Stripe Checkout Session 
         session = stripe.checkout.Session.create(

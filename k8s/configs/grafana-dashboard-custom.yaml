@@ -670,7 +670,7 @@ data:
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
                 "drawStyle": "line",
-                "fillOpacity": 13,
+                "fillOpacity": 18,
                 "gradientMode": "hue",
                 "hideFrom": {
                   "legend": false,
@@ -680,7 +680,7 @@ data:
                 "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
-                "pointSize": 5,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
